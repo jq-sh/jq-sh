@@ -1,0 +1,10 @@
+#!/usr/bin/env jqsh
+opts --null-input
+arg        key    $key
+arg_array  values $@
+
+__JQ__
+
+{
+  ($key): $values
+}

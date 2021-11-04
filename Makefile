@@ -1,6 +1,9 @@
 export PATH := bin:$(PATH)
 
-all: test
+all: test casts
+
+casts:
+	$(foreach file, $(wildcard ./screencasts/*.asc), $(file);)
 
 test:
 	@bash -c "shpec"

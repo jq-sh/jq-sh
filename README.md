@@ -137,4 +137,8 @@ __JQ__
 
 
 #### Example Usages:
- * see shpecs
+ * see [screencasts](https://github.com/zechris/jqsh/blob/main/screencasts)
+ * play using [asciinema-gh](https://github.com/zechris/asciinema-rec_script#asciinema-gh)
+   * `asciinema-gh zechris/jqsh` 
+
+[![asciicast](https://asciinema.org/a/6jLgabK4p2TYLHbo1trzyT6ru.svg)](https://asciinema.org/a/6jLgabK4p2TYLHbo1trzyT6ru)

@@ -117,8 +117,13 @@ __JQ__
 
 
 ### Example Usages:
- * see [shpecs](https://github.com/zechris/jqsh/tree/main/shpecs)
-   * `make test` # to run them
+ * [json-redact](https://github.com/zechris/jqsh/blob/main/bin/json-redact)
+   * This example script written in `jqsh` takes `redacted_keys` as arguments as
+     well as a `$MAX_LENGTH` env var to redact the values of any of the keys it finds
+     in the JSON it is applied to.
+   * see [shpecs/json-redact_shpec.sh](https://github.com/zechris/jqsh/blob/main/shpecs/json-redact_shpec.sh)
+     * _(Use `shpecs/json-redact_shpec.sh` to run that shpec)_
+     * _(or `shpec`, or `make test` to run the whole suite)_
 
 
 

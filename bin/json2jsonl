@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# TODO convert this to a jqsh script
+# ... problem is I can't seem to inject the $sort_by_expression into the script
+# because jq is treating it as a string instead of code
+# ... dunno what to do ... maybe if jq had an `eval` it might work,
+# but - meh ... this'll do
+
+resource=${resource:-}
+resources=${resources:-${resource}s}
+
+reverse="${reverse:-false}"
+
+sort_by_expression() {
+  if [[ -n "$*" ]]; then
+    echo ".${*// /,.}"
+  else
+    echo .
+  fi
+}
+sort_by_expression=${sort_by_expression:-$(sort_by_expression "$*")}
+
+jq --compact-output \
+  --arg resource "$resource" \
+  --arg resources "$resources"  \
+"
+  if type == \"array\" then
+                     ( sort_by($sort_by_expression) | if $reverse then reverse else . end )[]
+  else if has(\$resources) then
+    .[\$resources] | ( sort_by($sort_by_expression) | if $reverse then reverse else . end )[]
+  else if has(\$resource) then
+    .[\$resource]
+  else
+    .
+  end end end
+"

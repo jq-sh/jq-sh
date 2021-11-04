@@ -14,7 +14,7 @@ matches_expected() { local cmd="${cmd:-$1}"
 
   describe '`'"${cmd:-echo}"'`'
     subject() { eval "$cmd"; }
-    input() { eval "${input_cmd:-cat}" < "/dev/null"; }
+    input() { eval "${input_cmd:-cat}" < "${input_file}"; }
 
     it "matches expected"
       diff -u \

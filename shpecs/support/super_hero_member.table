@@ -1,0 +1,24 @@
+#!/usr/bin/env json2table
+
+cols=(
+  name
+  secretIdentity:secret_identity
+  powers
+  age
+)
+
+color_terms=(
+  Radiation
+  Flame
+  resistance
+)
+
+sort_by=(
+  name
+)
+
+
+__JQ__
+
+
+.powers |= join(", ")

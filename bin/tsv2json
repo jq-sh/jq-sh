@@ -1,0 +1,17 @@
+#!/usr/bin/env jqsh
+
+opts --null-input --raw-input --raw-output
+
+
+__JQ__
+
+
+[ inputs | split("\t") ]           |
+[.[0], .[1:]] as [$headers, $rows] |
+$rows                              |
+map([$headers, .])                 |
+map(
+  transpose |
+  map( {key:.[0], value: .[1]}) |
+  from_entries
+)[]

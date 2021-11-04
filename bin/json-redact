@@ -1,0 +1,41 @@
+#!/usr/bin/env jqsh
+# Example usages:
+## redact created_at, updated_at with default MAX_LENGTH (3)
+#  `              json-redact created_at updated_at`
+#
+## redact created_at, updated_at with no MAX_LENGTH
+#  `max_length=-1 json-redact created_at updated_at`
+
+
+opts --unbuffered --raw-output
+
+arg_array redacted_keys ${redacted_keys:-$@}
+arg_int   max_length    ${MAX_LENGTH:-3}
+
+
+__JQ__
+
+
+include "walk_pre16";
+
+walk_pre16(
+  if type == "object" then . as $obj |
+    $redacted_keys | reduce .[] as $attr (
+      $obj;
+      if has($attr) then
+        .[$attr] as $value |
+        if      $value | type == "string" then
+          .[$attr] = ($value|gsub("(.|n)"; "█")[0:$max_length])
+        else if $value | type == "number" then
+          .[$attr] = 0
+        else
+            .
+        end end
+      else
+        .
+      end
+    )
+  else
+    .
+  end
+)

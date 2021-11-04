@@ -1,0 +1,51 @@
+#!/usr/bin/env jqsh
+
+opts --null-input --raw-input --raw-output
+
+
+__JQ__
+
+
+def pad_col:
+  . as [$col, $size]  |
+  ($size - ($col | length)) |
+  "\($col)\(if . > 0 then " " * . else "" end)";
+
+def pad_row(col_sizes):
+  [., col_sizes] |
+  transpose      |
+  map(pad_col);
+
+# Although it works fin in jq-1.6, there's some kind of weird bug with `gsub`
+# in jq-1.5 (which is the default version in ubuntu), so we'll hack around it.
+def gsub_bug_in_jq1_5(regex; str):
+  split("") |
+  map(sub(regex; str)) |
+  join("");
+
+def build_border(chars):
+  "\(chars[0])\(gsub_bug_in_jq1_5("│"; chars[1]))\(chars[2])";
+
+def tabulate(col_sizes):
+  map(join("│")) |
+  [.[0], .[1:]] as [$headers, $rows] |
+  ( $headers | gsub_bug_in_jq1_5("[^│]"; "─")) as $border |
+  [
+    ($border  | build_border(["┌", "┬", "┐"])),
+    ($headers | "│[1m\(gsub_bug_in_jq1_5("│"; "[0m│[1m"))[0m│"),
+    ($border  | build_border(["├", "┼", "┤"]))
+  ] +
+  ( $rows | map("│\(.)│")) +
+  [
+    ($border | build_border(["└","┴", "┘"]))
+  ] |
+  join("\n");
+
+
+[ inputs | split("\t") ]       as $rows      |
+$rows | transpose              as $cols      |
+$cols | map(map(length) | max) as $col_sizes |
+
+$rows |
+  map(pad_row($col_sizes)) |
+  tabulate($col_sizes)

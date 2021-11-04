@@ -1,0 +1,127 @@
+#!/usr/bin/env bash
+
+preprocess() {
+  resources=${resources:-${resource}s}
+
+  jq --compact-output --arg resource "$resource" --arg resources "$resources" "
+    if type == \"array\" then
+      .[]
+    else if has(\$resources) then
+      .[\$resources][]
+    else if has(\$resource) then
+      .[\$resource]
+    else
+      .
+    end end end
+  "
+}
+
+identify_cols() {
+  jq --null-input --raw-output '
+    input |
+    if type == "array" then
+      .[0]
+    else
+      .
+    end |
+    keys | join(" ")
+  '
+}
+
+script="$1"
+if [[ -f "$script" ]]; then
+  shift
+  _resource="${script/*\/}"
+  resource="${resource:-${_resource%.table}}"
+else
+  # nope not a script
+  unset script
+
+  # --- TODO tidy this up
+  if [[ "${BASH_SOURCE[0]}" != "json2table" ]]; then
+    _resource="${resource:-${BASH_SOURCE[0]/*\/}}"
+    resource="${resource:-${_resource%.table}}"
+  fi
+
+  STDIN_FILE=$(mktemp)
+  cat > "$STDIN_FILE"
+  find_cols=$(preprocess < $STDIN_FILE | identify_cols)
+  # --- TODO tidy this up
+fi
+
+
+
+COLS=$(eval echo "${cols:-${@}}") # Nb. `eval echo "$cols"` allows x.{y1,y2} expansion
+SORT_BY=${sort_by:-}
+COLOR_TERMS=${color_terms:-}
+MISSING_KEY=${MISSING_KEY:-¿}
+
+color_missing() {
+  COLOR=41 color $MISSING_KEY
+}
+
+# put a table border character in front of each search term
+# so we can search for them & then uncolor them
+map_terms() {
+  for term in "$@"; do
+    echo "\\\<$term\\\>"
+  done | xargs
+}
+
+source_script() {
+  # Not sure why this doesn't work
+  # source <(sed -n '/^#/, /^__JQ__$/{//!p;}' "$1")
+  # ... so we'll just go with a temp file...
+  TEMP_FILE=$(mktemp)
+  sed -n '/^#/, /^__JQ__$/{//!p;}' "$1" > $TEMP_FILE
+  source $TEMP_FILE
+}
+
+if [[ -f "$script" ]]; then
+  source_script "$script"
+fi
+
+cols_key=${resource}_cols
+cols_key_add=${cols_key}_add
+
+sort_by_key=${resource}_sort_by
+
+color_terms_key=${resource}_color_terms
+color_terms_key_add=${color_terms_key}_add
+
+IFS=" " read -r -a cols <<< "\
+  ${!cols_key:-${COLS:-${cols[@]:-${find_cols}}}} \
+  ${!cols_key_add:-${cols_add:-}}"
+
+IFS=" " read -r -a sort_by <<< "\
+   ${!sort_by_key:-${SORT_BY:-${sort_by[@]:-.}}}"
+
+IFS=" " read -r -a color_terms <<< "\
+  (false|FALSE|FAILURE) \
+  (true|TRUE|SUCCESS) \
+  null \
+  ${!color_terms_key:-${COLOR_TERMS:-${color_terms[@]:-}}} \
+  ${!color_terms_key_add:-${color_terms_add:-}} \
+  $(
+    ${COLORIZE_TIMESTAMPS:-true} && echo '20[0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-9]'{0..9}Z
+  )"
+
+color_terms=( "$(map_terms "${color_terms[@]}")" )
+
+# >&2 echo "cols=[${cols[*]}]"
+# >&2 echo "sort_by=[${sort_by[*]}]"
+
+if [[ -f "$script" ]]; then
+  preprocess |
+    jqsh "$script"
+else
+  cat "$STDIN_FILE" |
+    preprocess         # TODO - remove this _second_ preprocess for non-scripts
+fi |
+  # TODO wonder if this can be removed?
+  jq --compact-output --slurp  . |
+  json2jsonl "${sort_by[@]}"      |
+  jsonl2tsv "${cols[@]}"          |
+  tsv2table                       |
+  color ${color_terms[*]}         |
+  color_missing

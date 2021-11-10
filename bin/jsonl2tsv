@@ -1,8 +1,7 @@
 #!/usr/bin/env jqsh
 # Usage: (see shpecs)
 
-opts --unbuffered
-opts --raw-output
+opts --unbuffered --raw-output
 
 arg_array   cols        ${cols:-$*}
 arg         missing_key ${missing_key:-¿}

@@ -1,0 +1,12 @@
+{"version": 2, "width": 208, "height": 53, "timestamp": 1636034729, "idle_time_limit": 1.0, "env": {"SHELL": "/bin/zsh", "TERM": "xterm-256color"}, "title": "tsv2table.asc"}
+[1.957129, "o", "🎥 \u001b[32;3mBegin recording - \u001b[1mtsv2table.asc\u001b[0m\r\n\r\n"]
+[2.031347, "o", "💭 \u001b[3;1m\u001b[38;2;255;255;255mTake some .tsv file (a file with tab separated values)\u001b[0m\u001b[0m\r\n"]
+[2.031395, "o", "\u001b[32;1m❯\u001b[0m "]
+[3.106932, "o", "\u001b[38;2;255;255;255mcat\u001b[0m\u001b[38;2;255;255;255m shpecs/support/data.tsv\u001b[0m\u001b[38;2;255;255;255m\u001b[0m\u001b[0m\r\n"]
+[3.111019, "o", "th1\tth2\ttableheading3\r\ntr1.1\t\ttr1.3\r\ntr2.1\ttablerow2.2\ttablerow2.3\r\n\t\t \r\n\t\ttr4.3\r\n"]
+[3.111341, "o", "\r\n"]
+[3.178363, "o", "💭 \u001b[3;1m\u001b[38;2;255;255;255mThen put it into a table\u001b[0m\u001b[0m\r\n"]
+[3.178474, "o", "\u001b[32;1m❯\u001b[0m "]
+[4.253309, "o", "\u001b[38;2;255;255;255mcat\u001b[0m\u001b[38;2;255;255;255m shpecs/support/data.tsv\u001b[0m\u001b[38;2;255;255;255m \u001b[0m\u001b[38;2;249;38;114m|\u001b[0m\u001b[38;2;255;255;255m \u001b[0m\u001b[38;2;255;255;255mtsv2table\u001b[0m\u001b[38;2;255;255;255m\u001b[0m\u001b[0m\r\n"]
+[4.310499, "o", "┌─────┬───────────┬─────────────┐\r\n│\u001b[1mth1  \u001b[0m│\u001b[1mth2        \u001b[0m│\u001b[1mtableheading3\u001b[0m│\r\n├─────┼───────────┼─────────────┤\r\n│tr1.1│           │tr1.3        │\r\n│tr2.1│tablerow2.2│tablerow2.3  │\r\n│     │           │             │\r\n│     │           │tr4.3        │\r\n└─────┴───────────┴─────────────┘\r\n"]
+[4.311402, "o", "🎬 \u001b[32;3mEnd recording - \u001b[1mtsv2table.asc\u001b[0m\r\n"]

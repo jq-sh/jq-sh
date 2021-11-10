@@ -14,7 +14,7 @@ sort_by_expression() {
   if [[ -n "$*" ]]; then
     echo ".${*// /,.}"
   else
-    echo .
+    echo null
   fi
 }
 sort_by_expression=${sort_by_expression:-$(sort_by_expression "$*")}

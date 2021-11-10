@@ -94,7 +94,7 @@ IFS=" " read -r -a cols <<< "\
   ${!cols_key_add:-${cols_add:-}}"
 
 IFS=" " read -r -a sort_by <<< "\
-   ${!sort_by_key:-${SORT_BY:-${sort_by[@]:-.}}}"
+   ${!sort_by_key:-${SORT_BY:-${sort_by[@]:-}}}"
 
 IFS=" " read -r -a color_terms <<< "\
   (false|FALSE|FAILURE) \

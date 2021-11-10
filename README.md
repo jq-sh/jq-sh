@@ -62,10 +62,10 @@ _Ahh... nice `jq` even pretty printed it for free! :)_
 
 
 🤔... but what if we could smash those two scripts together?
- * gaining the JSON processing power of jq
+ * gaining the JSON processing power of `jq`
  * without losing the simplicity of getting env vars & command line arguments into our a shell script
 
-So jqsh (written in bash) provides a [DSL](https://en.wikipedia.org/wiki/Domain-specific_language) to invoke our `jq` script with all the env vars and command line args we want to send to it.
+So `jqsh` (written in bash) provides a [DSL](https://en.wikipedia.org/wiki/Domain-specific_language) to invoke our `jq` script with all the env vars and command line args we want to send to it.
 
 And it can be used like this:
 

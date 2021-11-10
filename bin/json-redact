@@ -4,7 +4,7 @@
 #  `              json-redact created_at updated_at`
 #
 ## redact created_at, updated_at with no MAX_LENGTH
-#  `max_length=-1 json-redact created_at updated_at`
+#  `MAX_LENGTH=-1 json-redact created_at updated_at`
 
 
 opts --unbuffered --raw-output

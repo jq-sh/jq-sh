@@ -45,7 +45,7 @@ else
 
   STDIN_FILE=$(mktemp)
   cat > "$STDIN_FILE"
-  find_cols=$(preprocess < $STDIN_FILE | identify_cols)
+  find_cols=$(preprocess < "$STDIN_FILE" | identify_cols)
   # --- TODO tidy this up
 fi
 
@@ -57,15 +57,7 @@ COLOR_TERMS=${color_terms:-}
 MISSING_KEY=${MISSING_KEY:-¿}
 
 color_missing() {
-  COLOR=41 color $MISSING_KEY
-}
-
-# put a table border character in front of each search term
-# so we can search for them & then uncolor them
-map_terms() {
-  for term in "$@"; do
-    echo "\\\<$term\\\>"
-  done | xargs
+  COLOR=41 color "$MISSING_KEY"
 }
 
 source_script() {
@@ -73,55 +65,97 @@ source_script() {
   # source <(sed -n '/^#/, /^__JQ__$/{//!p;}' "$1")
   # ... so we'll just go with a temp file...
   TEMP_FILE=$(mktemp)
-  sed -n '/^#/, /^__JQ__$/{//!p;}' "$1" > $TEMP_FILE
-  source $TEMP_FILE
+  sed -n '/^#/, /^__JQ__$/{//!p;}' "$1" > "$TEMP_FILE"
+  # shellcheck disable=SC1090
+  source "$TEMP_FILE"
 }
 
-if [[ -f "$script" ]]; then
-  source_script "$script"
-fi
+cols_for() { local resource=$1
+  {
+    cols_key="${resource}_cols[@]"
+    resource_cols=${!cols_key}
+    if [[ -z "${resource_cols}" ]]; then
+      echo "${COLS:-${cols[@]:-${find_cols}}}"
+    else
+      echo "${resource_cols}"
+    fi
 
-cols_key=${resource}_cols
-cols_key_add=${cols_key}_add
+    cols_key_add="${resource}_cols_add[@]"
+    resource_cols_add=${!cols_key_add}
+    if [[ -z "${resource_cols_add}" ]]; then
+      echo "${cols_add[@]:-}"
+    else
+      echo "${resource_cols_add}"
+    fi
+  } | xargs
+}
 
-sort_by_key=${resource}_sort_by
+sort_by_for() { local resource=$1
+  sort_by_key="${resource}_sort_by[@]"
+  resource_sort_by=${!sort_by_key}
+  if [[ -z "${resource_sort_by}" ]]; then
+    echo "${SORT_BY:-${sort_by[@]:-}}"
+  else
+    echo "${resource_sort_by}"
+  fi
+}
 
-color_terms_key=${resource}_color_terms
-color_terms_key_add=${color_terms_key}_add
+color_terms_for() { local resource=$1
+  {
+    echo "(false|FALSE|FAILURE)"
+    echo "(true|TRUE|SUCCESS)"
+    echo null
 
-IFS=" " read -r -a cols <<< "\
-  ${!cols_key:-${COLS:-${cols[@]:-${find_cols}}}} \
-  ${!cols_key_add:-${cols_add:-}}"
+    color_terms_key="${resource}_color_terms[@]"
+    resource_color_terms=${!color_terms_key}
+    if [[ -z "${resource_color_terms}" ]]; then
+      echo "${COLOR_TERMS:-${color_terms[@]:-}}"
+    else
+      echo "${resource_color_terms}"
+    fi
 
-IFS=" " read -r -a sort_by <<< "\
-   ${!sort_by_key:-${SORT_BY:-${sort_by[@]:-}}}"
+    color_terms_key_add="${resource}_color_terms_add[@]"
+    resource_color_terms_add=${!color_terms_key_add}
+    if [[ -z "${resource_color_terms_add}" ]]; then
+      echo "${color_terms_add[@]:-}"
+    else
+      echo "${resource_color_terms_add}"
+    fi
 
-IFS=" " read -r -a color_terms <<< "\
-  (false|FALSE|FAILURE) \
-  (true|TRUE|SUCCESS) \
-  null \
-  ${!color_terms_key:-${COLOR_TERMS:-${color_terms[@]:-}}} \
-  ${!color_terms_key_add:-${color_terms_add:-}} \
-  $(
     ${COLORIZE_TIMESTAMPS:-true} && echo '20[0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-9]'{0..9}Z
-  )"
 
-color_terms=( "$(map_terms "${color_terms[@]}")" )
+  } |
+    # ahh yer ... don't ask..
+    xargs | sed 's/\([^ ]*\)/\\\<\1\\\>/g'
+}
 
-# >&2 echo "cols=[${cols[*]}]"
+
+[[ -f "$script" ]] && source_script "$script"
+# shellcheck disable=SC1090
+[[ -f "${conf:-}" ]] && source "$conf"
+
+
+IFS=" " read -r -a cols < <(cols_for "$resource")
+# >&2 echo "cols[${#cols}]=[${cols[*]}]"
+
+IFS=" " read -r -a sort_by < <(sort_by_for "$resource")
 # >&2 echo "sort_by=[${sort_by[*]}]"
+
+IFS=" " read -r -a color_terms < <(color_terms_for "$resource")
+# >&2 echo "color_terms=[${color_terms[*]}]"
+
 
 if [[ -f "$script" ]]; then
   preprocess |
     jqsh "$script"
 else
-  cat "$STDIN_FILE" |
-    preprocess         # TODO - remove this _second_ preprocess for non-scripts
+  # TODO - remove this _second_ preprocess for non-scripts
+  preprocess < "$STDIN_FILE"
 fi |
   # TODO wonder if this can be removed?
   jq --compact-output --slurp  . |
-  json2jsonl "${sort_by[@]}"      |
-  jsonl2tsv "${cols[@]}"          |
-  tsv2table                       |
-  color ${color_terms[*]}         |
+  json2jsonl "${sort_by[@]}"     |
+  jsonl2tsv "${cols[@]}"         |
+  tsv2table                      |
+  color "${color_terms[@]}"      |
   color_missing

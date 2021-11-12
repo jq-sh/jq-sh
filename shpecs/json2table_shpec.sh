@@ -246,5 +246,34 @@ EOF
         end
       end
     end
+
+    describe 'conf files'
+      input_cmd='jq --compact-output ".members[]"'
+
+      describe 'specific conf'
+        matches_expected 'conf=shpecs/support/specific.conf super_hero_member.table' \
+<<-EOF
+┌───────────────┬────────────────┬───────────────────────────────────────────────────────────────────────────┬───────┬───┬──────┐
+│name           │:secret_identity│powers                                                                     │age    │foo│gender│
+├───────────────┼────────────────┼───────────────────────────────────────────────────────────────────────────┼───────┼───┼──────┤
+│Madame Uppercut│Jane Wilson     │Million tonne punch, Damage resistance, Superhuman reflexes                │39     │¿  │female│
+│Eternal Flame  │Unknown         │Immortality, Heat Immunity, Inferno, Teleportation, Interdimensional travel│1000000│¿  │female│
+│Molecule Man   │Dan Jukes       │Radiation resistance, Turning tiny, Radiation blast                        │29     │¿  │male  │
+└───────────────┴────────────────┴───────────────────────────────────────────────────────────────────────────┴───────┴───┴──────┘
+EOF
+      end
+
+      describe 'shared conf'
+        matches_expected 'conf=shpecs/support/shared.conf super_hero_member.table' \
+<<-EOF
+┌───────────────┬────────────────┬───────────────────────────────────────────────────────────────────────────┬───────┬───┬──────┐
+│name           │:secret_identity│powers                                                                     │age    │bar│gender│
+├───────────────┼────────────────┼───────────────────────────────────────────────────────────────────────────┼───────┼───┼──────┤
+│Madame Uppercut│Jane Wilson     │Million tonne punch, Damage resistance, Superhuman reflexes                │39     │¿  │female│
+│Eternal Flame  │Unknown         │Immortality, Heat Immunity, Inferno, Teleportation, Interdimensional travel│1000000│¿  │female│
+│Molecule Man   │Dan Jukes       │Radiation resistance, Turning tiny, Radiation blast                        │29     │¿  │male  │
+└───────────────┴────────────────┴───────────────────────────────────────────────────────────────────────────┴───────┴───┴──────┘
+EOF
+      end
   end
 end

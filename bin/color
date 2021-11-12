@@ -25,6 +25,7 @@ next_color() {
 }
 
 color() { pattern="$1"
+# >&2 echo "pattern=[$pattern]"
   GREP_COLOR="${COLOR_EFFECTS}${COLOR}" grep -E --color=always --line-buffered "${pattern}|$" | {
     shift
     if [ $# -gt 0 ]; then

@@ -22,9 +22,29 @@ matches_expected() { local cmd="${cmd:-$1}"
         <(
          input |
            subject |
-           color_strip
+             if ${STRIP_COLOR:-false}; then
+               cat
+             else
+               strip_color
+             fi
         )
       assert equal $? 0
     end
   end
+}
+
+matches_expected_with_colors() {
+  STRIP_COLOR=true matches_expected "$@"
+}
+
+xmatches_expected() { local cmd="${cmd:-$1}"
+  describe '`'"${cmd:-echo}"'`'
+    it 
+      iecho "[33;1mpending[0m"
+    end
+  end
+}
+
+xmatches_expected_with_colors() {
+  xmatches_expected "$@"
 }

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+IFS0=$IFS
 
 preprocess() {
   resources=${resources:-${resource}s}
@@ -53,7 +54,6 @@ fi
 
 COLS=$(eval echo "${cols:-${@}}") # Nb. `eval echo "$cols"` allows x.{y1,y2} expansion
 SORT_BY=${sort_by:-}
-COLOR_TERMS=${color_terms:-}
 MISSING_KEY=${MISSING_KEY:-¿}
 
 color_missing() {
@@ -100,49 +100,84 @@ sort_by_for() { local resource=$1
   fi
 }
 
-color_terms_for() { local resource=$1
-  {
-    echo "(false|FALSE|FAILURE)"
-    echo "(true|TRUE|SUCCESS)"
-    echo null
-
-    color_terms_key="${resource}_color_terms[@]"
-    resource_color_terms=${!color_terms_key}
-    if [[ -z "${resource_color_terms}" ]]; then
-      echo "${COLOR_TERMS:-${color_terms[@]:-}}"
-    else
-      echo "${resource_color_terms}"
-    fi
-
-    color_terms_key_add="${resource}_color_terms_add[@]"
-    resource_color_terms_add=${!color_terms_key_add}
-    if [[ -z "${resource_color_terms_add}" ]]; then
-      echo "${color_terms_add[@]:-}"
-    else
-      echo "${resource_color_terms_add}"
-    fi
-
-    ${COLORIZE_TIMESTAMPS:-true} && echo '20[0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-9]'{0..9}Z
-
-  } |
-    # ahh yer ... don't ask..
-    xargs | sed 's/\([^ ]*\)/\\\<\1\\\>/g'
+term() {
+  for term in "$@"; do
+    [[ -n "$term" ]] && echo "\<$term\>"
+  done
 }
 
+# TODO - DRY this up...
+color_terms_for() { local resource=$1
+  term "(false|FALSE|FAILURE)"
+  term "(true|TRUE|SUCCESS)"
+  term null
+
+  color_terms_key="${resource}_color_terms[@]"
+  resource_color_terms=( "${!color_terms_key}" )
+  if [[ -n "${resource_color_terms_str}" ]]; then
+    IFS=$'\n' resource_color_terms=( $(echo "${resource_color_terms_str}") )
+    IFS=$'\n' term "${resource_color_terms[@]}"
+  else
+    if [[ -z "${resource_color_terms[*]}" ]]; then
+      if [[ -n "${color_terms_str}" ]]; then
+        IFS=$'\n' color_terms=( $(echo "${color_terms_str}") )
+        IFS=$'\n' term "${color_terms[@]}"
+      else
+        term "${color_terms[@]}"
+      fi
+    else
+      IFS=$IFS0
+      term "${resource_color_terms[@]}"
+    fi
+  fi
+
+  color_terms_add_key="${resource}_color_terms_add[@]"
+  resource_color_terms_add=( "${!color_terms_add_key}" )
+  if [[ -n "${resource_color_terms_add_str}" ]]; then
+    IFS=$'\n' resource_color_terms_add=( $(echo "${resource_color_terms_add_str}") )
+    IFS=$'\n' term "${resource_color_terms_add[@]}"
+  else
+    if [[ -z "${resource_color_terms_add[*]}" ]]; then
+      if [[ -n "${color_terms_add_str}" ]]; then
+        IFS=$'\n' color_terms_add=( $(echo "${color_terms_add_str}") )
+        IFS=$'\n' term "${color_terms_add[@]}"
+      else
+        term "${color_terms_add[@]}"
+      fi
+    else
+      IFS=$IFS0
+      term "${resource_color_terms_add[@]}"
+    fi
+  fi
+
+
+  ${COLORIZE_TIMESTAMPS:-false} && term '20[0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-9]'{0..9}Z
+}
+
+color_terms_str=${color_terms:-}
+color_terms_str_key="${resource}_color_terms"
+resource_color_terms_str="${!color_terms_str_key:-}"
+color_terms_add_str=${color_terms_add:-}
+color_terms_add_str_key="${resource}_color_terms_add"
+resource_color_terms_add_str="${!color_terms_add_str_key:-}"
 
 [[ -f "$script" ]] && source_script "$script"
 # shellcheck disable=SC1090
 [[ -f "${conf:-}" ]] && source "$conf"
 
 
-IFS=" " read -r -a cols < <(cols_for "$resource")
+read -r -a cols < <(cols_for "$resource")
 # >&2 echo "cols[${#cols}]=[${cols[*]}]"
 
-IFS=" " read -r -a sort_by < <(sort_by_for "$resource")
+read -r -a sort_by < <(sort_by_for "$resource")
 # >&2 echo "sort_by=[${sort_by[*]}]"
 
-IFS=" " read -r -a color_terms < <(color_terms_for "$resource")
-# >&2 echo "color_terms=[${color_terms[*]}]"
+# Nb. unlike cols & sort_by color_terms can have spaces in them
+# so have to be handled differently
+IFS=$'\n'; for term in $(color_terms_for "$resource"); do
+  color_terms_a+=( "$term" )
+done; IFS=$IFS0
+# >&2 echo "color_terms_a=[${color_terms_a[*]}]"
 
 
 if [[ -f "$script" ]]; then
@@ -157,5 +192,5 @@ fi |
   json2jsonl "${sort_by[@]}"     |
   jsonl2tsv "${cols[@]}"         |
   tsv2table                      |
-  color "${color_terms[@]}"      |
+  color "${color_terms_a[@]}"    |
   color_missing

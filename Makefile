@@ -8,5 +8,5 @@ casts:
 test:
 	@bash -c "shpec"
 
-docker_test:
+test-docker:
 	@bash -c "docker build -t jqsh . && docker run -i --rm jqsh"

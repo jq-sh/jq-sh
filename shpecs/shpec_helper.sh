@@ -16,10 +16,10 @@ matches_expected() { local cmd="${cmd:-$1}"
         <(
          input |
            subject |
-             if ${STRIP_COLOR:-false}; then
-               cat
-             else
+             if ${STRIP_COLOR:-true}; then
                strip_color
+             else
+               cat
              fi
         )
       assert equal $? 0
@@ -28,7 +28,10 @@ matches_expected() { local cmd="${cmd:-$1}"
 }
 
 matches_expected_with_colors() {
-  STRIP_COLOR=true matches_expected "$@"
+  case $(uname -s) in
+    Darwin) xmatches_expected_with_colors "$@" ;;
+    *)  STRIP_COLOR=false matches_expected "$@" ;;
+  esac
 }
 
 xmatches_expected() { local cmd="${cmd:-$1}"

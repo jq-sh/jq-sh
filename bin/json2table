@@ -1,32 +1,7 @@
 #!/usr/bin/env bash
-IFS0=$IFS
 
 preprocess() {
-  resources=${resources:-${resource}s}
-
-  jq --compact-output --arg resource "$resource" --arg resources "$resources" "
-    if type == \"array\" then
-      .[]
-    else if has(\$resources) then
-      .[\$resources][]
-    else if has(\$resource) then
-      .[\$resource]
-    else
-      .
-    end end end
-  "
-}
-
-identify_cols() {
-  jq --null-input --raw-output '
-    input |
-    if type == "array" then
-      .[0]
-    else
-      .
-    end |
-    keys | join(" ")
-  '
+  resource="$resource" resources=$resources extract_resource
 }
 
 script="$1"
@@ -115,18 +90,17 @@ color_terms_for() { local resource=$1
   color_terms_key="${resource}_color_terms[@]"
   resource_color_terms=( "${!color_terms_key}" )
   if [[ -n "${resource_color_terms_str}" ]]; then
-    IFS=$'\n' resource_color_terms=( $(echo "${resource_color_terms_str}") )
-    IFS=$'\n' term "${resource_color_terms[@]}"
+    resource_color_terms=( $(echo "${resource_color_terms_str}") )
+    term "${resource_color_terms[@]}"
   else
     if [[ -z "${resource_color_terms[*]}" ]]; then
       if [[ -n "${color_terms_str}" ]]; then
-        IFS=$'\n' color_terms=( $(echo "${color_terms_str}") )
-        IFS=$'\n' term "${color_terms[@]}"
+        color_terms=( $(echo "${color_terms_str}") )
+        term "${color_terms[@]}"
       else
         term "${color_terms[@]}"
       fi
     else
-      IFS=$IFS0
       term "${resource_color_terms[@]}"
     fi
   fi
@@ -134,18 +108,17 @@ color_terms_for() { local resource=$1
   color_terms_add_key="${resource}_color_terms_add[@]"
   resource_color_terms_add=( "${!color_terms_add_key}" )
   if [[ -n "${resource_color_terms_add_str}" ]]; then
-    IFS=$'\n' resource_color_terms_add=( $(echo "${resource_color_terms_add_str}") )
-    IFS=$'\n' term "${resource_color_terms_add[@]}"
+    resource_color_terms_add=( $(echo "${resource_color_terms_add_str}") )
+    term "${resource_color_terms_add[@]}"
   else
     if [[ -z "${resource_color_terms_add[*]}" ]]; then
       if [[ -n "${color_terms_add_str}" ]]; then
-        IFS=$'\n' color_terms_add=( $(echo "${color_terms_add_str}") )
-        IFS=$'\n' term "${color_terms_add[@]}"
+        color_terms_add=( $(echo "${color_terms_add_str}") )
+        term "${color_terms_add[@]}"
       else
         term "${color_terms_add[@]}"
       fi
     else
-      IFS=$IFS0
       term "${resource_color_terms_add[@]}"
     fi
   fi
@@ -174,7 +147,7 @@ read -r -a sort_by < <(sort_by_for "$resource")
 
 # Nb. unlike cols & sort_by color_terms can have spaces in them
 # so have to be handled differently
-IFS=$'\n'; for term in $(color_terms_for "$resource"); do
+IFS0=$IFS; IFS=$'\n'; for term in $(color_terms_for "$resource"); do
   color_terms_a+=( "$term" )
 done; IFS=$IFS0
 # >&2 echo "color_terms_a=[${color_terms_a[*]}]"

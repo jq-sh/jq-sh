@@ -1,0 +1,18 @@
+#!/usr/bin/env jqsh
+
+opts --compact-output
+
+arg resource  $resource
+arg resources ${resources:-${resource}s}
+
+__JQ__
+
+if type == "array" then
+  .[]
+else if has($resources) then
+  .[$resources][]
+else if has($resource) then
+  .[$resource]
+else
+  .
+end end end

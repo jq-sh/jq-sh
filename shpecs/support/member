@@ -1,0 +1,27 @@
+#!/usr/bin/env jsont
+
+powers=(
+  "Radiation resistance"
+  "Turning tiny"
+  "Radiation blast"
+)
+
+
+arg       name           "${name:-Molecule Man}"
+arg_int   age            "${age:-30}"
+arg       gender         "${gender:-male}"
+arg       secretIdentity "${secretIdentity:-Dan Jukes}"
+arg_array powers         "${powers[@]}"
+
+
+__JQ__
+
+
+{
+  $name,
+  $age,
+  $gender,
+  $secretIdentity,
+  $powers
+}
+

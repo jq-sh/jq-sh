@@ -1,0 +1,23 @@
+#!/usr/bin/env jqsh
+
+
+__JQ__
+
+
+include "walk_pre16";
+
+walk_pre16(
+  if type == "object" then
+    delpaths([
+      path(
+        .[] |
+        select(
+          . == null or
+          . == "null"
+        )
+      )
+    ])
+  else
+    .
+  end
+)

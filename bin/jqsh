@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # This jq / sh hybrid is to make passing arguments into jq a little easier.
 
+export JQSH_HOME="${BASH_SOURCE[0]%/*}/.."
+export JQSH_LIB="${JQSH_HOME}/lib/jq"
+
 opts() {
   printf "%s " "$@"
 }
@@ -77,8 +80,9 @@ script="$1"; shift
 
 if grep -q '^__JQ__$' "$script"; then
   # shellcheck disable=SC1090
-  ${DEBUG:-false} && >&2 echo jq -L~/.jq -L../lib/jq -L../lib -L"$(module_dir)" "$(source "$script")"
-  eval jq -L~/.jq -L../lib/jq -L../lib -L"$(module_dir)" "$(source "$script")"
+  cmd="jq -L~/.jq -L../lib/jq -L../lib -L'$(module_dir)' -L'${JQSH_LIB}' $(source "$script")"
+  ${DEBUG:-false} && >&2 echo $cmd
+                         eval $cmd
 else
   cat
 fi

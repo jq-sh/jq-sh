@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+sed -e 's/[\[0-9;]*m//g' \
+    -e 's/\[K//g'        \
+    -e 's/ $//g'

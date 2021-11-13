@@ -1,0 +1,13 @@
+#!/usr/bin/env jqsh
+
+opts --null-input --raw-output
+
+__JQ__
+
+input |
+if type == "array" then
+  .[0]
+else
+  .
+end |
+keys | join(" ")

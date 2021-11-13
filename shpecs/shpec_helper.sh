@@ -1,12 +1,6 @@
 export PATH=./bin:$PATH
 export PATH="./shpecs/support:$PATH"
 
-color_strip() {
-  sed -e 's/[\[0-9;]*m//g' \
-      -e 's/\[K//g'        \
-      -e 's/ $//g'
-}
-
 input_file=${input_file:-"/dev/null"}
 
 matches_expected() { local cmd="${cmd:-$1}"
@@ -22,9 +16,32 @@ matches_expected() { local cmd="${cmd:-$1}"
         <(
          input |
            subject |
-           color_strip
+             if ${STRIP_COLOR:-true}; then
+               strip_color
+             else
+               cat
+             fi
         )
       assert equal $? 0
     end
   end
+}
+
+matches_expected_with_colors() {
+  case $(uname -s) in
+    Darwin) xmatches_expected_with_colors "$@" ;;
+    *)  STRIP_COLOR=false matches_expected "$@" ;;
+  esac
+}
+
+xmatches_expected() { local cmd="${cmd:-$1}"
+  describe '`'"${cmd:-echo}"'`'
+    it 
+      iecho "[33;1mpending[0m"
+    end
+  end
+}
+
+xmatches_expected_with_colors() {
+  xmatches_expected "$@"
 }

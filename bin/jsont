@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+opts="--null-input --compact-output" jqsh "$@"

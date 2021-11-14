@@ -1,0 +1,31 @@
+#!/usr/bin/env jsont
+
+members=(
+
+)
+
+arg         squadName  "${squadName:-Super hero squad}"
+arg_boolean active     "${active:-true}"
+arg_int     formed     "${formed:-2016}"
+arg         homeTown   "${homeTown:-Metro City}"
+arg         secretBase "${secretBase:-Super tower}"
+arg_jsonl   members     $(
+  for member_command in "${@:-member}"; do
+    eval "$member_command"
+  done
+)
+
+
+__JQ__
+
+
+{
+  $squadName,
+  $active,
+  $formed,
+  location: {
+    $homeTown,
+    $secretBase
+  },
+  $members
+}

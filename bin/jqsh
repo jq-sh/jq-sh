@@ -31,7 +31,7 @@ arg_boolean() {
 }
 
 arg_array() { local name=$1; shift
-  argjson "$name" "$(printf '%q\n' "${@}" | values2json)"
+  argjson "$name" "$(printf '%s\n' "${@}" | values2json)"
 }
 
 arg() { local name=$1; shift
@@ -43,6 +43,12 @@ arg() { local name=$1; shift
       printf "%s %q " "--arg $name" "$@"
     ;;
   esac
+}
+
+arg_json() { argjson "$@"; }
+
+arg_jsonl() { local name=$1; shift
+  argjson "$name" "$(jq -c --slurp . <<< "$@")"
 }
 
 #####
@@ -80,9 +86,9 @@ script="$1"; shift
 
 if grep -q '^__JQ__$' "$script"; then
   # shellcheck disable=SC1090
-  cmd="jq -L~/.jq -L../lib/jq -L../lib -L'$(module_dir)' -L'${JQSH_LIB}' $(source "$script")"
-  ${DEBUG:-false} && >&2 echo $cmd
-                         eval $cmd
+  ${DEBUG:-false} && >&2 echo jq ${opts:-} -L~/.jq -L../lib/jq -L../lib -L"${JQSH_LIB}" -L"$(module_dir)" "$(source "$script")"
+                         eval jq ${opts:-} -L~/.jq -L../lib/jq -L../lib -L"${JQSH_LIB}" -L"$(module_dir)" "$(source "$script")"
+
 else
   cat
 fi

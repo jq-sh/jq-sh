@@ -13,6 +13,6 @@ else
   # TODO - can we use a file descriptor or mkfifo instead?
   # eg. `exec 3<>$(mktemp)`
   STDIN_TMP="$(mktemp)"
-  # shellcheck disable=SC2094
-  resource=$(cat | tee >(jq -c | identify_resource) > "$STDIN_TMP") $(table) "$@" < "$STDIN_TMP"
+  resource=$(cat | tee >(jq -c | identify_resource) > "$STDIN_TMP")
+  resource=$resource $(table) "$@" < "$STDIN_TMP"
 fi

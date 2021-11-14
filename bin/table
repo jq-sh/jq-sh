@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+table() {
+  type -P "${resource}.table" > /dev/null && echo "${resource}.table" || echo json2table
+}
+
+if [[ -n "$resource" ]]; then
+  $(table) "$@"
+else
+  # NB. try and avoid having to identify the resource
+  # as it involves double handling the input to a temporary file
+
+  # TODO - can we use a file descriptor or mkfifo instead?
+  # eg. `exec 3<>$(mktemp)`
+  STDIN_TMP="$(mktemp)"
+  # shellcheck disable=SC2094
+  resource=$(cat | tee >(jq -c | identify_resource) > "$STDIN_TMP") $(table) "$@" < "$STDIN_TMP"
+fi

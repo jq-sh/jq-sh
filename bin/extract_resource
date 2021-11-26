@@ -1,4 +1,4 @@
-#!/usr/bin/env jqsh
+#!/usr/bin/env jq-sh
 
 opts --compact-output
 

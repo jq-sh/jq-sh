@@ -1,11 +1,11 @@
-# jqsh
+# jq-sh
 A shell script wrapper for [jq](https://stedolan.github.io/jq) (the command-line JSON processor)
 
 ## Getting Started
 ### Installation:
 ```
-git clone git@github.com:zechris/jqsh.git ~/Code/zechris/jqsh
-export PATH="$HOME/Code/zechris/jqsh/bin:$PATH"
+git clone git@github.com:jq-sh/jq-sh.git ~/Code/jq-sh/jq-sh
+export PATH="$HOME/Code/jq-sh/jq-sh/bin:$PATH"
 ```
 
 
@@ -20,7 +20,7 @@ export PATH="$HOME/Code/zechris/jqsh/bin:$PATH"
 
 Consider that you might start with a shell script like this:
 
-#### [a.sh](https://github.com/zechris/jqsh/blob/main/shpecs/support/a.sh)
+#### [a.sh](https://github.com/jq-sh/jq-sh/blob/main/shpecs/support/a.sh)
 ```bash
 #!/usr/bin/env bash
 
@@ -40,7 +40,7 @@ echo "{ \"$key\": [\"$1\", \"$2\", \"$3\"] }"
 
 And then realize `jq` would make generating your JSON a _lot_ easier with something like:
 
-#### [a.jq](https://github.com/zechris/jqsh/blob/main/shpecs/support/a.jq)
+#### [a.jq](https://github.com/jq-sh/jq-sh/blob/main/shpecs/support/a.jq)
 ```jq
 {
   ($key): $values
@@ -65,21 +65,21 @@ _Ahh... nice `jq` even pretty printed it for free! :)_
  * gaining the JSON processing power of `jq`
  * without losing the simplicity of getting env vars & command line arguments into our a shell script
 
-So `jqsh` (written in bash) provides a [DSL](https://en.wikipedia.org/wiki/Domain-specific_language) to invoke our `jq` script with all the env vars and command line args we want to send to it.
+So `jq-sh` (written in bash) provides a [DSL](https://en.wikipedia.org/wiki/Domain-specific_language) to invoke our `jq` script with all the env vars and command line args we want to send to it.
 
 And it can be used like this:
 
-#### [a.jqsh](https://github.com/zechris/jqsh/blob/main/shpecs/support/a.jqsh)
+#### [a.jqsh](https://github.com/jq-sh/jq-sh/blob/main/shpecs/support/a.jqsh)
 ```bash
-#!/usr/bin/env jqsh
+#!/usr/bin/env jq-sh
 
 # First the bash part...
 # Write whatever bash you need here...
 # ... but just make sure you don't write *anything* to stdout
-# (Nb. using '>&2' allows bash to send output to stderr & avoid messing with jqsh)
+# (Nb. using '>&2' allows bash to send output to stderr & avoid messing with jq-sh)
 
 
-# Then use jqsh's bash DSL to tell jqsh how to invoke `jq` for you.
+# Then use jq-sh's bash DSL to tell jq-sh how to invoke `jq` for you.
 # Noting that we still have access to any ENV vars & command line args `$@`
 # because we're still in `bash` land here...
 opts --null-input --raw-input --raw-output
@@ -117,11 +117,11 @@ __JQ__
 
 
 ### Example Usages:
- * [json-redact](https://github.com/zechris/jqsh/blob/main/bin/json-redact)
-   * This example script written in `jqsh` takes `redacted_keys` as arguments as
+ * [json-redact](https://github.com/jq-sh/jq-sh/blob/main/bin/json-redact)
+   * This example script written in `jq-sh` takes `redacted_keys` as arguments as
      well as a `$MAX_LENGTH` env var to redact the values of any of the keys it finds
      in the JSON it is applied to.
-   * see [shpecs/json-redact_shpec.sh](https://github.com/zechris/jqsh/blob/main/shpecs/json-redact_shpec.sh)
+   * see [shpecs/json-redact_shpec.sh](https://github.com/jq-sh/jq-sh/blob/main/shpecs/json-redact_shpec.sh)
      * _(Use `shpecs/json-redact_shpec.sh` to run that shpec)_
      * _(or `shpec`, or `make test` to run the whole suite)_
 
@@ -132,13 +132,13 @@ __JQ__
 
 #### Requirements:
  * [jq](https://stedolan.github.io/jq)
- * [jqsh](https://github.com/zechris/jqsh)
+ * [jq-sh](https://github.com/jq-sh/jq-sh)
 
 
 
 #### Example Usages:
- * see [screencasts](https://github.com/zechris/jqsh/blob/main/screencasts)
+ * see [screencasts](https://github.com/jq-sh/jq-sh/blob/main/screencasts)
  * play using [asciinema-gh](https://github.com/zechris/asciinema-rec_script#asciinema-gh)
-   * `asciinema-gh zechris/jqsh` 
+   * `asciinema-gh jq-sh/jq-sh` 
 
 [![asciicast](https://asciinema.org/a/6jLgabK4p2TYLHbo1trzyT6ru.svg)](https://asciinema.org/a/6jLgabK4p2TYLHbo1trzyT6ru)

@@ -9,4 +9,4 @@ test:
 	@bash -c "shpec"
 
 test-docker:
-	@bash -c "docker build -t jqsh . && docker run -i --rm jqsh"
+	@bash -c "docker build -t jq-sh . && docker run -i --rm jq-sh"

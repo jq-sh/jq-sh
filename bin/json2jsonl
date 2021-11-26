@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# TODO convert this to a jqsh script
+# TODO convert this to a jq-sh script
 # ... problem is I can't seem to inject the $sort_by_expression into the script
 # because jq is treating it as a string instead of code
 # ... dunno what to do ... maybe if jq had an `eval` it might work,

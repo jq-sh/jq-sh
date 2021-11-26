@@ -1,4 +1,4 @@
-#!/usr/bin/env jqsh
+#!/usr/bin/env jq-sh
 # Example usages:
 ## redact created_at, updated_at with default MAX_LENGTH (3)
 #  `              json-redact created_at updated_at`

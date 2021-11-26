@@ -21,7 +21,7 @@ describe "jq"
 EOF
 end
 
-describe "jqsh"
+describe "jq-sh"
   matches_expected 'key=animals a.jqsh ant bee cat' \
 <<-EOF
 {

@@ -155,7 +155,7 @@ done; IFS=$IFS0
 
 if [[ -f "$script" ]]; then
   preprocess |
-    jqsh "$script"
+    jq-sh "$script"
 else
   # TODO - remove this _second_ preprocess for non-scripts
   preprocess < "$STDIN_FILE"

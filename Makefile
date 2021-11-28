@@ -5,6 +5,9 @@ all: test casts
 casts:
 	$(foreach file, $(wildcard ./screencasts/*.asc), $(file);)
 
+casts_upload:
+	@bash -c "./screencasts/upload.sh"
+
 test:
 	@bash -c "shpec"
 

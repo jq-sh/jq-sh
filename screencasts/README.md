@@ -1,4 +1,10 @@
 # Screencasts
+
+ * [color](color.md)
+ * [json2table](json2table.md)
+ * [jsonl2tsv](jsonl2tsv.md)
+ * [tsv2table](tsv2table.md)
+
 The `.cast` files in this directory are generated from the `.asc` files.
 (This can be done by simply by running them, or by running `make casts` from the root directory.)
 

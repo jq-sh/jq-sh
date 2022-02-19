@@ -1,15 +1,18 @@
 #!/bin/sh
+# --help
 # Its like grep but doesn't filter out lines & each search term gets its own color!
-#
+#  
 # Example usages:
-#   while date; do sleep 1; done |                               color '^[A-Z][a-z][a-z]'            ' [A-Z][a-z][a-z]'  ':[0-9][0-9]:' '[0-9]'{0..9}' '
-#   while date; do sleep 1; done |                               color '^[A-Z][a-z][a-z]' SKIP_GREEN ' [A-Z][a-z][a-z]'  ':[0-9][0-9]:' '[0-9]'{0..9}' '
-#   while date; do sleep 1; done |                      COLOR=42 color '^[A-Z][a-z][a-z]'            ' [A-Z][a-z][a-z]'  ':[0-9][0-9]:' '[0-9]'{0..9}' '
-#   while date; do sleep 1; done | COLOR_EFFECTS="3;4;" COLOR=42 color '^[A-Z][a-z][a-z]'            ' [A-Z][a-z][a-z]'  ':[0-9][0-9]:' '[0-9]'{0..9}' '
+#  * echo hello world             |                               color he                 wo         lo
+#  * while date; do sleep 1; done |                               color '^[A-Z][a-z][a-z]'            ' [A-Z][a-z][a-z]'  ':[0-9][0-9]:' '[0-9]'{0..9}' '
+#  * while date; do sleep 1; done |                               color '^[A-Z][a-z][a-z]' SKIP_GREEN ' [A-Z][a-z][a-z]'  ':[0-9][0-9]:' '[0-9]'{0..9}' '
+#  * while date; do sleep 1; done |                      COLOR=42 color '^[A-Z][a-z][a-z]'            ' [A-Z][a-z][a-z]'  ':[0-9][0-9]:' '[0-9]'{0..9}' '
+#  * while date; do sleep 1; done | COLOR_EFFECTS="3;4;" COLOR=42 color '^[A-Z][a-z][a-z]'            ' [A-Z][a-z][a-z]'  ':[0-9][0-9]:' '[0-9]'{0..9}' '
+self--help "$0" "$@" && exit
 
 COLOR=${COLOR:-31}                 # Defaults to red
 COLOR_EFFECTS=${COLOR_EFFECTS:-1;} # Defaults to bold
-SKIP_COLORS=${SKIP_COLORS:-"$(seq --separator=' ' 37 40) $(seq --separator=' ' 47 90) 98 99 103"}
+SKIP_COLORS=${SKIP_COLORS:-"$(seq -s' ' 37 40) $(seq -s' ' 47 90) 98 99 103"}
 MAX_COLOR=${MAX_COLOR:-106}
 MIN_COLOR=${MIN_COLOR:-$COLOR}
 

@@ -42,6 +42,7 @@ xmatches_expected() { local cmd="${cmd:-$1}"
   end
 }
 
+# Darwin is adding some weird ^[k control characters with grep's colors that aren't on linux
 xmatches_expected_with_colors() {
   xmatches_expected "$@"
 }

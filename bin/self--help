@@ -1,0 +1,21 @@
+#!/bin/sh
+
+markdown_highlighter() {
+  if command -v bat > /dev/null 2>&1; then
+    echo "bat --color=always --style=${BAT_STYLE:-plain} --language=markdown"
+  else
+    echo cat
+  fi
+}
+
+script="$1"; shift
+
+[ "$1" = --help ] ||
+[ "$1" = -h     ] && {
+  printf "[1m%s[0m\n\n" "$(basename "$script")"
+
+  sed -n -e '/^# --help$/,/^$/{/^# --help$/d;/^self--help/d;p;}' < "$script"  |
+    # strip blank lines & stuff
+    sed -e :a -e 's/^# //g' -e '/^\n*$/{$d;N;};/\n$/ba' |
+      ${MARKDOWN:=$(markdown_highlighter)}
+}

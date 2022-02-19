@@ -135,8 +135,15 @@ color_terms_add_str_key="${resource}_color_terms_add"
 resource_color_terms_add_str="${!color_terms_add_str_key:-}"
 
 [[ -f "$script" ]] && source_script "$script"
+
+if [[ ${conf:-} = "${HOME:-~}" ]]; then
+  conf="${conf}/.json2table/${resource:-}.conf"
+fi
+
 # shellcheck disable=SC1090
-[[ -f "${conf:-}" ]] && source "$conf"
+if [[ -f "${conf:-}" ]]; then
+  source "$conf"
+fi
 
 
 read -r -a cols < <(cols_for "$resource")

@@ -272,6 +272,19 @@ EOF
 │Molecule Man   │Dan Jukes       │Radiation resistance, Turning tiny, Radiation blast                        │29     │¿  │male  │
 └───────────────┴────────────────┴───────────────────────────────────────────────────────────────────────────┴───────┴───┴──────┘
 EOF
+
+        describe 'from ~/.json2table/${resource}.conf'
+          HOME=shpecs/support matches_expected 'conf=~ super_hero_member.table' \
+<<-EOF
+┌───────────────┬────────────────┬───────────────────────────────────────────────────────────────────────────┬───────┬───┬──────┐
+│name           │:secret_identity│powers                                                                     │age    │bar│gender│
+├───────────────┼────────────────┼───────────────────────────────────────────────────────────────────────────┼───────┼───┼──────┤
+│Madame Uppercut│Jane Wilson     │Million tonne punch, Damage resistance, Superhuman reflexes                │39     │¿  │female│
+│Eternal Flame  │Unknown         │Immortality, Heat Immunity, Inferno, Teleportation, Interdimensional travel│1000000│¿  │female│
+│Molecule Man   │Dan Jukes       │Radiation resistance, Turning tiny, Radiation blast                        │29     │¿  │male  │
+└───────────────┴────────────────┴───────────────────────────────────────────────────────────────────────────┴───────┴───┴──────┘
+EOF
+        end
       end
 
       describe 'shared conf'

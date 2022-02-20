@@ -14,8 +14,8 @@ script="$1"; shift
 [ "$1" = -h     ] && {
   printf "[1m%s[0m\n\n" "$(basename "$script")"
 
-  sed -n -e '/^# --help$/,/^$/{/^# --help$/d;/^self--help/d;p;}' < "$script"  |
+  sed -n -e '/^# --help$/,/^$/{/^# --help$/d;/^--help/d;p;}' < "$script"  |
     # strip blank lines & stuff
-    sed -e :a -e 's/^# //g' -e '/^\n*$/{$d;N;};/\n$/ba' |
+    sed -E 's/^#( |[ ]*$)//g; $d' |
       ${MARKDOWN:=$(markdown_highlighter)}
 }

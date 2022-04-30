@@ -136,7 +136,7 @@ __JQ__
  * [jq-sh](https://github.com/jq-sh/jq-sh)
 
 
-#### Example Usages:
+# Example Usages:
 
 ## color
 [![asciicast](https://asciinema.org/a/0rxyVXCr0CnGiEW99mz7a3Osr.svg)](https://asciinema.org/a/0rxyVXCr0CnGiEW99mz7a3Osr)

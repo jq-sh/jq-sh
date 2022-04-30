@@ -128,17 +128,21 @@ __JQ__
 
 
 ## Also included
-### [json2table]()
+### [json2table](https://github.com/jq-sh/jq-sh/blob/main/screencasts/json2table.md)
+
 
 #### Requirements:
  * [jq](https://stedolan.github.io/jq)
  * [jq-sh](https://github.com/jq-sh/jq-sh)
 
 
-
 #### Example Usages:
- * see [screencasts](https://github.com/jq-sh/jq-sh/blob/main/screencasts)
- * play using [asciinema-gh](https://github.com/zechris/asciinema-rec_script#asciinema-gh)
-   * `asciinema-gh jq-sh/jq-sh` 
 
-[![asciicast](https://asciinema.org/a/6jLgabK4p2TYLHbo1trzyT6ru.svg)](https://asciinema.org/a/6jLgabK4p2TYLHbo1trzyT6ru)
+## color
+[![asciicast](https://asciinema.org/a/0rxyVXCr0CnGiEW99mz7a3Osr.svg)](https://asciinema.org/a/0rxyVXCr0CnGiEW99mz7a3Osr)
+## json2table
+[![asciicast](https://asciinema.org/a/tDodJIElJMPuPEMMbVM6x1JxD.svg)](https://asciinema.org/a/tDodJIElJMPuPEMMbVM6x1JxD)
+## jsonl2tsv
+[![asciicast](https://asciinema.org/a/RqGkWuk0nUz31CKatuR4lXv0L.svg)](https://asciinema.org/a/RqGkWuk0nUz31CKatuR4lXv0L)
+## tsv2table
+[![asciicast](https://asciinema.org/a/qx2AreNMBnztFlAUZaSQPu35L.svg)](https://asciinema.org/a/qx2AreNMBnztFlAUZaSQPu35L)

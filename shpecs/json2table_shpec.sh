@@ -221,14 +221,14 @@ EOF
 └───────────────┴────────────────┴───────────────────────────────────────────────────────────────────────────┴───────┘
 EOF
 
-        matches_expected 'sort_by="gender age" super_hero_member.table' \
+        matches_expected 'sort_by="age" super_hero_member.table' \
 <<-EOF
 ┌───────────────┬────────────────┬───────────────────────────────────────────────────────────────────────────┬───────┐
 │name           │:secret_identity│powers                                                                     │age    │
 ├───────────────┼────────────────┼───────────────────────────────────────────────────────────────────────────┼───────┤
+│Molecule Man   │Dan Jukes       │Radiation resistance, Turning tiny, Radiation blast                        │29     │
 │Madame Uppercut│Jane Wilson     │Million tonne punch, Damage resistance, Superhuman reflexes                │39     │
 │Eternal Flame  │Unknown         │Immortality, Heat Immunity, Inferno, Teleportation, Interdimensional travel│1000000│
-│Molecule Man   │Dan Jukes       │Radiation resistance, Turning tiny, Radiation blast                        │29     │
 └───────────────┴────────────────┴───────────────────────────────────────────────────────────────────────────┴───────┘
 EOF
 

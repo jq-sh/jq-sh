@@ -1,2 +1,2 @@
 ## color
-[![asciicast](https://asciinema.org/a/77yKUcfG1Jxx1MTLI6vYZP2S4.svg)](https://asciinema.org/a/77yKUcfG1Jxx1MTLI6vYZP2S4)
+[![asciicast](https://asciinema.org/a/4BHVTMQyIptX18uuwzLhsjrFG.svg)](https://asciinema.org/a/4BHVTMQyIptX18uuwzLhsjrFG)

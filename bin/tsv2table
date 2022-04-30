@@ -2,6 +2,7 @@
 
 opts --null-input --raw-input --raw-output
 
+arg title "${title}"
 
 __JQ__
 
@@ -26,11 +27,12 @@ def gsub_bug_in_jq1_5(regex; str):
 def build_border(chars):
   "\(chars[0])\(gsub_bug_in_jq1_5("│"; chars[1]))\(chars[2])";
 
-def tabulate(col_sizes):
+def tabulate(col_sizes; title):
   map(join("│")) |
   [.[0], .[1:]] as [$headers, $rows] |
   ( $headers | gsub_bug_in_jq1_5("[^│]"; "─")) as $border |
   [
+    (if (title|length) > 0 then "[1m\(title)[0m" else empty end),
     ($border  | build_border(["┌", "┬", "┐"])),
     ($headers | "│[1m\(gsub_bug_in_jq1_5("│"; "[0m│[1m"))[0m│"),
     ($border  | build_border(["├", "┼", "┤"]))
@@ -48,4 +50,4 @@ $cols | map(map(length) | max) as $col_sizes |
 
 $rows |
   map(pad_row($col_sizes)) |
-  tabulate($col_sizes)
+  tabulate($col_sizes; $title)

@@ -1,5 +1,7 @@
 #!/usr/bin/env json2table
 
+title="Super Heroes"
+
 cols=(
   name
   secretIdentity:secret_identity

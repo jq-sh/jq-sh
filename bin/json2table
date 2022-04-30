@@ -30,6 +30,7 @@ fi
 COLS=$(eval echo "${cols:-${@}}") # Nb. `eval echo "$cols"` allows x.{y1,y2} expansion
 SORT_BY=${sort_by:-}
 MISSING_KEY=${MISSING_KEY:-¿}
+TITLE=${title:-}
 
 color_missing() {
   COLOR=41 color "$MISSING_KEY"
@@ -47,16 +48,16 @@ source_script() {
 
 cols_for() { local resource=$1
   {
-    cols_key="${resource}_cols[@]"
-    resource_cols=${!cols_key}
+    key="${resource}_cols[@]"
+    resource_cols=${!key}
     if [[ -z "${resource_cols}" ]]; then
       echo "${COLS:-${cols[@]:-${find_cols}}}"
     else
       echo "${resource_cols}"
     fi
 
-    cols_key_add="${resource}_cols_add[@]"
-    resource_cols_add=${!cols_key_add}
+    key_add="${resource}_cols_add[@]"
+    resource_cols_add=${!key_add}
     if [[ -z "${resource_cols_add}" ]]; then
       echo "${cols_add[@]:-}"
     else
@@ -66,12 +67,22 @@ cols_for() { local resource=$1
 }
 
 sort_by_for() { local resource=$1
-  sort_by_key="${resource}_sort_by[@]"
-  resource_sort_by=${!sort_by_key}
+  key="${resource}_sort_by[@]"
+  resource_sort_by=${!key}
   if [[ -z "${resource_sort_by}" ]]; then
     echo "${SORT_BY:-${sort_by[@]:-}}"
   else
     echo "${resource_sort_by}"
+  fi
+}
+
+title_for() { local resource=$1
+  key="${resource}_title"
+  resource_title=${!key}
+  if [[ -z "${resource_title}" ]]; then
+    echo "${TITLE:-${title:-}}"
+  else
+    echo "${resource_title}"
   fi
 }
 
@@ -152,6 +163,9 @@ read -r -a cols < <(cols_for "$resource")
 read -r -a sort_by < <(sort_by_for "$resource")
 # >&2 echo "sort_by=[${sort_by[*]}]"
 
+title=$(title_for "$resource")
+
+
 # Nb. unlike cols & sort_by color_terms can have spaces in them
 # so have to be handled differently
 IFS0=$IFS; IFS=$'\n'; for term in $(color_terms_for "$resource"); do
@@ -171,6 +185,6 @@ fi |
   jq --compact-output --slurp  . |
   json2jsonl "${sort_by[@]}"     |
   jsonl2tsv "${cols[@]}"         |
-  tsv2table                      |
+  title=$title tsv2table         |
   color "${color_terms_a[@]}"    |
   color_missing

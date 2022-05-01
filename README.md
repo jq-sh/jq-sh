@@ -1,4 +1,6 @@
 # jq-sh
+[![Conventional Commits][conventional-commits-image]][conventional-commits-url]
+
 A shell script wrapper for [jq](https://stedolan.github.io/jq) (the command-line JSON processor)
 
 ## Getting Started
@@ -149,3 +151,6 @@ __JQ__
 
 ## tsv2table
 [![tsv2table.cast](screencasts/tsv2table.gif)](https://asciinema.org/a/siRbO0BsvLSLi2D7mlffSgZUe)
+
+[conventional-commits-image]: https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg
+[conventional-commits-url]: https://conventionalcommits.org

@@ -139,10 +139,13 @@ __JQ__
 # Example Usages:
 
 ## color
-[![asciicast](https://asciinema.org/a/0rxyVXCr0CnGiEW99mz7a3Osr.svg)](https://asciinema.org/a/0rxyVXCr0CnGiEW99mz7a3Osr)
+[![color.cast](screencasts/color.gif)](https://asciinema.org/a/OmdXG320fLpSLVKF5cD8OOReA)
+
 ## json2table
-[![asciicast](https://asciinema.org/a/tDodJIElJMPuPEMMbVM6x1JxD.svg)](https://asciinema.org/a/tDodJIElJMPuPEMMbVM6x1JxD)
+[![json2table.cast](screencasts/json2table.gif)](https://asciinema.org/a/xgoiE7OvwGCYGxx2bw0NdbsI9)
+
 ## jsonl2tsv
-[![asciicast](https://asciinema.org/a/RqGkWuk0nUz31CKatuR4lXv0L.svg)](https://asciinema.org/a/RqGkWuk0nUz31CKatuR4lXv0L)
+[![jsonl2tsv.cast](screencasts/jsonl2tsv.gif)](https://asciinema.org/a/sjISInChTMxf0mN14TMsYpxxh)
+
 ## tsv2table
-[![asciicast](https://asciinema.org/a/qx2AreNMBnztFlAUZaSQPu35L.svg)](https://asciinema.org/a/qx2AreNMBnztFlAUZaSQPu35L)
+[![tsv2table.cast](screencasts/tsv2table.gif)](https://asciinema.org/a/siRbO0BsvLSLi2D7mlffSgZUe)

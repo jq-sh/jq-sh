@@ -1,13 +1,14 @@
 #!/usr/bin/env shpec
 # shellcheck disable=SC1090,SC1091,SC2016
 source "${BASH_SOURCE[0]%/*}/shpec_helper.sh"
+export input_cmd input_file
 
 
 describe "json2table"
-  export input_file='shpecs/support/super_heroes.json'
+  input_file='shpecs/support/super_heroes.json'
 
   describe 'processing `.json` files'
-    export input_cmd='jq --compact-output ".members"'
+    input_cmd='jq --compact-output ".members"'
 
     describe 'cols'
       describe 'all'
@@ -59,6 +60,19 @@ EOF
 │Madame Uppercut│Jane Wilson     │
 │Eternal Flame  │Unknown         │
 └───────────────┴────────────────┘
+EOF
+      end
+
+      describe 'using truncation'
+        matches_expected 'cols="name powers%30" json2table' \
+<<-EOF
+┌───────────────┬──────────────────────────────┐
+│name           │powers                        │
+├───────────────┼──────────────────────────────┤
+│Molecule Man   │["Radiation resistance",...t"]│
+│Madame Uppercut│["Million tonne punch","...s"]│
+│Eternal Flame  │["Immortality","Heat Imm...l"]│
+└───────────────┴──────────────────────────────┘
 EOF
       end
     end

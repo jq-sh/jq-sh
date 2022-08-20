@@ -9,40 +9,57 @@ arg_boolean headers     ${headers:-true}
 
 
 __JQ__
+def truncate(max; end_size):
+  (if end_size then end_size else 3 end) as $end_size |
+
+  if max and (.|length) > (max - 3) then "\(.[0:(max-$end_size-3)])...\(.[-$end_size:])" else . end;
 
 
-( $cols     | map(. | split(":")[ 0]                  )) as $keys       |
-( $cols     | map(. | split(".")[-1] | split(":")[-1] )) as $headings   |
+def dig(key):
+  reduce (key | split("."))[] as $subkey (
+    .;
+    if type == "object" and has($subkey) then
+      .[$subkey]
+    else
+      $missing_key
+    end
+  );
 
-(
-  if $headers and (input_line_number < 2) then
-    # if the key matches the heading then use the heading
-    # else prepend : to the heading
-    [ $keys, $headings ] |
-      transpose |
-      map(
-      if .[0] == .[1] then
-        .[1]
-      else
-        ":\(.[1])"
-      end
-    )
+
+def key_value_for(row):
+  # split the input key into key & max value length
+#  ( . | split("%")                           ) as [$key, $max_str] |
+#  ( $max_str | if . then tonumber else . end ) as $max             |
+  ( . | split("%")                                                 ) as [$key, $truncation_cmd   ] |
+  ( $truncation_cmd // "" | split(",")                             ) as [$max_str, $end_size_str ] |
+  ( [$max_str, $end_size_str] | map(if . then tonumber else . end) ) as [$max, $end_size         ] |
+
+  row | dig($key) | tostring | truncate($max; $end_size);
+
+def show_heading(key; heading):
+  if heading == (key|split("%")[0]) then
+    heading
   else
-    empty
-  end
-),
-(
+    ":\(heading)"
+  end;
+
+
+def header(keys; headings):
+  [ keys, headings ] | transpose |
+  map(show_heading(.[0];.[1]));
+
+
+def show_header(keys; headings):
+  if $headers and (input_line_number < 2) then header(keys; headings) else empty end;
+
+
+def show_rows(keys):
   . as $row |
-  (
-    $keys |
-    map(
-      ( . | split(".") ) as $subkeys                  |  # split the col name on "." & into subkeys
-      reduce $subkeys[] as $subkey (
-        $row;
-        if type == "object" and has($subkey) then .[$subkey] else $missing_key end
-      )                                               |  # dive deeper into the row by reducing with subkeys
-      tostring
-    )                                                    # pull out each col from each row and convert to string
-  )
-) |
-@tsv                                                     # convert to tsv
+  keys | map(key_value_for($row));
+
+
+( $cols | map(. | split(":")[ 0]                                 )) as $keys        |
+( $cols | map(. | split(".")[-1] | split(":")[-1] | split("%")[0])) as $headings    |
+( $cols | map(. | split("%")[-1]                                 )) as $truncations |
+
+show_header($keys; $headings), show_rows($keys) | @tsv

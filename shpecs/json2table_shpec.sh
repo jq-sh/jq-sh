@@ -1,5 +1,7 @@
 #!/usr/bin/env shpec
-source shpecs/shpec_helper.sh
+# shellcheck disable=SC1090,SC1091,SC2016
+source "${BASH_SOURCE[0]%/*}/shpec_helper.sh"
+export input_cmd input_file
 
 
 describe "json2table"
@@ -9,7 +11,47 @@ describe "json2table"
     input_cmd='jq --compact-output ".members"'
 
     describe 'cols'
-      matches_expected 'cols="name secretIdentity:secret_identity" json2table' \
+      describe 'all'
+        matches_expected 'json2table' \
+<<-EOF
+┌───────┬──────┬───────────────┬───────────────────────────────────────────────────────────────────────────────────┬──────────────┐
+│age    │gender│name           │powers                                                                             │secretIdentity│
+├───────┼──────┼───────────────┼───────────────────────────────────────────────────────────────────────────────────┼──────────────┤
+│29     │male  │Molecule Man   │["Radiation resistance","Turning tiny","Radiation blast"]                          │Dan Jukes     │
+│39     │female│Madame Uppercut│["Million tonne punch","Damage resistance","Superhuman reflexes"]                  │Jane Wilson   │
+│1000000│female│Eternal Flame  │["Immortality","Heat Immunity","Inferno","Teleportation","Interdimensional travel"]│Unknown       │
+└───────┴──────┴───────────────┴───────────────────────────────────────────────────────────────────────────────────┴──────────────┘
+EOF
+      end
+
+      describe 'some'
+        matches_expected 'json2table age name' \
+<<-EOF
+┌───────┬───────────────┐
+│age    │name           │
+├───────┼───────────────┤
+│29     │Molecule Man   │
+│39     │Madame Uppercut│
+│1000000│Eternal Flame  │
+└───────┴───────────────┘
+EOF
+      end
+
+      describe 'using an env var'
+        matches_expected 'cols="name secretIdentity" json2table' \
+<<-EOF
+┌───────────────┬──────────────┐
+│name           │secretIdentity│
+├───────────────┼──────────────┤
+│Molecule Man   │Dan Jukes     │
+│Madame Uppercut│Jane Wilson   │
+│Eternal Flame  │Unknown       │
+└───────────────┴──────────────┘
+EOF
+      end
+
+      describe 'using an alias'
+        matches_expected 'cols="name secretIdentity:secret_identity" json2table' \
 <<-EOF
 ┌───────────────┬────────────────┐
 │name           │:secret_identity│
@@ -19,6 +61,20 @@ describe "json2table"
 │Eternal Flame  │Unknown         │
 └───────────────┴────────────────┘
 EOF
+      end
+
+      describe 'using truncation'
+        matches_expected 'cols="name powers%30" json2table' \
+<<-EOF
+┌───────────────┬──────────────────────────────┐
+│name           │powers                        │
+├───────────────┼──────────────────────────────┤
+│Molecule Man   │["Radiation resistance",...t"]│
+│Madame Uppercut│["Million tonne punch","...s"]│
+│Eternal Flame  │["Immortality","Heat Imm...l"]│
+└───────────────┴──────────────────────────────┘
+EOF
+      end
     end
   end
 

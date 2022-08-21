@@ -141,16 +141,16 @@ __JQ__
 # Example Usages:
 
 ## color
-[![color.cast](screencasts/color.gif)](https://asciinema.org/a/DmqHB0XcpwgqpgcbWruB8MBht)
+[![color.cast](screencasts/color.gif)](https://asciinema.org/a/0jmWyHoWDHAMqrnskzZ352tpl)
 
 ## json2table
-[![json2table.cast](screencasts/json2table.gif)](https://asciinema.org/a/xOn2OSH0uxZmmAczklu7CxVfE)
+[![json2table.cast](screencasts/json2table.gif)](https://asciinema.org/a/ddWLM2UhzXX7U3sR2V4vwoNZK)
 
 ## jsonl2tsv
-[![jsonl2tsv.cast](screencasts/jsonl2tsv.gif)](https://asciinema.org/a/upAWKVhuJ2zOu7TvUWUUVGU5b)
+[![jsonl2tsv.cast](screencasts/jsonl2tsv.gif)](https://asciinema.org/a/8KRsMxTDnR23RhWQEM9cQrETl)
 
 ## tsv2table
-[![tsv2table.cast](screencasts/tsv2table.gif)](https://asciinema.org/a/souJiaNVTdtfaFO8pmJaI3d3U)
+[![tsv2table.cast](screencasts/tsv2table.gif)](https://asciinema.org/a/W7BPOlgpTHMiHJayXRod6RFgz)
 
 [conventional-commits-image]: https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg
 [conventional-commits-url]: https://conventionalcommits.org

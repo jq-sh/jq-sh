@@ -7,8 +7,8 @@ export input_cmd input_file
 describe "json2table"
   input_file='shpecs/support/super_heroes.json'
 
-  describe 'processing `.json` files'
-    input_cmd='jq --compact-output ".members"'
+  describe 'processing `.jsonl` files'
+    input_cmd='jq --compact-output ".members[]"'
 
     describe 'cols'
       describe 'all'
@@ -75,13 +75,6 @@ EOF
 └───────────────┴──────────────────────────────┘
 EOF
       end
-    end
-  end
-
-  describe 'processing `.jsonl` files'
-    input_cmd='jq --compact-output ".members[]"'
-
-    describe 'cols'
       matches_expected 'cols="name secretIdentity:secret_identity" json2table' \
 <<-EOF
 ┌───────────────┬────────────────┐
@@ -560,4 +553,25 @@ EOF
 EOF
     end
   end
+
+  # there should be no difference between .json & .jsonl, so let's only bother doing one test...
+  describe 'processing `.json` files'
+    input_cmd='jq --compact-output ".members"'
+
+    describe 'cols'
+      describe 'all'
+        matches_expected 'json2table' \
+<<-EOF
+┌───────┬──────┬───────────────┬───────────────────────────────────────────────────────────────────────────────────┬──────────────┐
+│age    │gender│name           │powers                                                                             │secretIdentity│
+├───────┼──────┼───────────────┼───────────────────────────────────────────────────────────────────────────────────┼──────────────┤
+│29     │male  │Molecule Man   │["Radiation resistance","Turning tiny","Radiation blast"]                          │Dan Jukes     │
+│39     │female│Madame Uppercut│["Million tonne punch","Damage resistance","Superhuman reflexes"]                  │Jane Wilson   │
+│1000000│female│Eternal Flame  │["Immortality","Heat Immunity","Inferno","Teleportation","Interdimensional travel"]│Unknown       │
+└───────┴──────┴───────────────┴───────────────────────────────────────────────────────────────────────────────────┴──────────────┘
+EOF
+      end
+    end
+  end
+
 end

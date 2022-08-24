@@ -75,38 +75,6 @@ EOF
 └───────────────┴──────────────────────────────┘
 EOF
       end
-      matches_expected 'cols="name secretIdentity:secret_identity" json2table' \
-<<-EOF
-┌───────────────┬────────────────┐
-│name           │:secret_identity│
-├───────────────┼────────────────┤
-│Molecule Man   │Dan Jukes       │
-│Madame Uppercut│Jane Wilson     │
-│Eternal Flame  │Unknown         │
-└───────────────┴────────────────┘
-EOF
-
-      matches_expected 'json2table age name' \
-<<-EOF
-┌───────┬───────────────┐
-│age    │name           │
-├───────┼───────────────┤
-│29     │Molecule Man   │
-│39     │Madame Uppercut│
-│1000000│Eternal Flame  │
-└───────┴───────────────┘
-EOF
-
-      matches_expected 'json2table' \
-<<-EOF
-┌───────┬──────┬───────────────┬───────────────────────────────────────────────────────────────────────────────────┬──────────────┐
-│age    │gender│name           │powers                                                                             │secretIdentity│
-├───────┼──────┼───────────────┼───────────────────────────────────────────────────────────────────────────────────┼──────────────┤
-│29     │male  │Molecule Man   │["Radiation resistance","Turning tiny","Radiation blast"]                          │Dan Jukes     │
-│39     │female│Madame Uppercut│["Million tonne punch","Damage resistance","Superhuman reflexes"]                  │Jane Wilson   │
-│1000000│female│Eternal Flame  │["Immortality","Heat Immunity","Inferno","Teleportation","Interdimensional travel"]│Unknown       │
-└───────┴──────┴───────────────┴───────────────────────────────────────────────────────────────────────────────────┴──────────────┘
-EOF
     end
 
     describe 'sort_by'

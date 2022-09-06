@@ -144,13 +144,13 @@ __JQ__
 [![color.cast](screencasts/color.gif)](https://asciinema.org/a/0jmWyHoWDHAMqrnskzZ352tpl)
 
 ## json2table
-[![json2table.cast](screencasts/json2table.gif)](https://asciinema.org/a/ddWLM2UhzXX7U3sR2V4vwoNZK)
+[![json2table.cast](screencasts/json2table.gif)](https://asciinema.org/a/ac3bfAn6VARAap0v1QYOprnpr)
 
 ## jsonl2tsv
-[![jsonl2tsv.cast](screencasts/jsonl2tsv.gif)](https://asciinema.org/a/8KRsMxTDnR23RhWQEM9cQrETl)
+[![jsonl2tsv.cast](screencasts/jsonl2tsv.gif)](https://asciinema.org/a/MW1WVgHQACU9RGcqs4M4NHeii)
 
 ## tsv2table
-[![tsv2table.cast](screencasts/tsv2table.gif)](https://asciinema.org/a/W7BPOlgpTHMiHJayXRod6RFgz)
+[![tsv2table.cast](screencasts/tsv2table.gif)](https://asciinema.org/a/4CPWOFesWpKJtZnJ0LnL81WnB)
 
 [conventional-commits-image]: https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg
 [conventional-commits-url]: https://conventionalcommits.org

@@ -5,7 +5,9 @@ opts --compact-output
 arg resource  $resource
 arg resources ${resources:-${resource}s}
 
+
 __JQ__
+
 
 if type == "array" then
   .[]

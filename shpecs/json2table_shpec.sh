@@ -153,7 +153,7 @@ EOF
     describe 'json2table with `resources` key'
       input_cmd='cat'
 
-      matches_expected 'resource=member json2table name secret.identity:secret_identity' \
+      matches_expected 'resources=members json2table name secret.identity:secret_identity' \
 <<-EOF
 ┌───────────────┬────────────────┐
 │name           │:secret_identity│

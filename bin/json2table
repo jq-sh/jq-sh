@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 preprocess() {
-  resource="$resource" resources=$resources extract_resource
+  resource="$resource" extract_resource
 }
 
 script="$1"
@@ -101,12 +101,12 @@ color_terms_for() { local resource=$1
   color_terms_key="${resource}_color_terms[@]"
   resource_color_terms=( "${!color_terms_key}" )
   if [[ -n "${resource_color_terms_str}" ]]; then
-    resource_color_terms=( $(echo "${resource_color_terms_str}") )
+    IFS=" " read -r -a resource_color_terms <<< "${resource_color_terms_str}"
     term "${resource_color_terms[@]}"
   else
     if [[ -z "${resource_color_terms[*]}" ]]; then
       if [[ -n "${color_terms_str}" ]]; then
-        color_terms=( $(echo "${color_terms_str}") )
+        IFS=" " read -r -a color_terms <<< "${color_terms_str}"
         term "${color_terms[@]}"
       else
         term "${color_terms[@]}"
@@ -119,12 +119,13 @@ color_terms_for() { local resource=$1
   color_terms_add_key="${resource}_color_terms_add[@]"
   resource_color_terms_add=( "${!color_terms_add_key}" )
   if [[ -n "${resource_color_terms_add_str}" ]]; then
-    resource_color_terms_add=( $(echo "${resource_color_terms_add_str}") )
+    IFS=" " read -r -a resource_color_terms_add <<< "${resource_color_terms_add_str}"
     term "${resource_color_terms_add[@]}"
   else
     if [[ -z "${resource_color_terms_add[*]}" ]]; then
       if [[ -n "${color_terms_add_str}" ]]; then
-        color_terms_add=( $(echo "${color_terms_add_str}") )
+        IFS=" " read -r -a color_terms_add <<< "${color_terms_add_str}"
+
         term "${color_terms_add[@]}"
       else
         term "${color_terms_add[@]}"
@@ -175,9 +176,9 @@ done; IFS=$IFS0
 
 
 cols_json=$(parse_cols "${cols[@]}")
-keys=(       $(jq --raw-output 'map(.key                  ) | @tsv' <<< "$cols_json"))
-headings=(   $(jq --raw-output 'map(.heading              ) | @tsv' <<< "$cols_json"))
-truncations=($(jq --raw-output 'map(.truncation | tostring) | @tsv' <<< "$cols_json"))
+IFS=" " read -r -a keys        <<< "$(jq --raw-output 'map(.key                  ) | @tsv' <<< "$cols_json")"
+IFS=" " read -r -a headings    <<< "$(jq --raw-output 'map(.heading              ) | @tsv' <<< "$cols_json")"
+IFS=" " read -r -a truncations <<< "$(jq --raw-output 'map(.truncation | tostring) | @tsv' <<< "$cols_json")"
 
 
 if [[ -f "$script" ]]; then

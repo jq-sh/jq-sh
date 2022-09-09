@@ -174,9 +174,10 @@ done; IFS=$IFS0
 # >&2 echo "color_terms_a=[${color_terms_a[*]}]"
 
 
-keys=(       $(parse_cols "${cols[@]}" | jq --raw-output 'map(.key       ) | @tsv'))
-headings=(   $(parse_cols "${cols[@]}" | jq --raw-output 'map(.heading   ) | @tsv'))
-truncations=($(parse_cols "${cols[@]}" | jq --raw-output 'map(.truncation | tostring) | @tsv'))
+cols_json=$(parse_cols "${cols[@]}")
+keys=(       $(jq --raw-output 'map(.key                  ) | @tsv' <<< "$cols_json"))
+headings=(   $(jq --raw-output 'map(.heading              ) | @tsv' <<< "$cols_json"))
+truncations=($(jq --raw-output 'map(.truncation | tostring) | @tsv' <<< "$cols_json"))
 
 
 if [[ -f "$script" ]]; then

@@ -9,9 +9,6 @@ arg_jsonl truncations          $@
 __JQ__
 
 
-# Pending - https://github.com/stedolan/jq/pull/2478
-def debug(msg): (msg | debug) as $debug | .;
-
 def truncate(max; end_size):
   if length > max then
     "\(.[0:(max-end_size-3)])...\(.[-end_size:])"
@@ -53,7 +50,7 @@ def col_to_shrink:
 
 def shrink_cell_widths(target_col_width_sum; col_width_sum):
   # Uncomment this to debug the cell width shrinking
-  # debug({ col_width_sum: col_width_sum, widths: .}) |
+  # empty = ({ col_width_sum: col_width_sum, widths: .} | debug) |
 
   if col_width_sum <= target_col_width_sum then
     # The final base case adds all the width differences together

@@ -1,0 +1,12 @@
+#!/usr/bin/env jq-sh
+
+opts --null-input --raw-output
+
+arg_array excluded_keys ${@:null}
+arg_array keys          $(identify_cols)
+
+
+__JQ__
+
+
+$keys - $excluded_keys | @tsv

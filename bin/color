@@ -1,4 +1,6 @@
 #!/bin/sh
+# shellcheck disable=SC2215
+
 # --help
 # Its like grep but doesn't filter out lines & each search term gets its own color!
 #           
@@ -16,7 +18,6 @@ SKIP_COLORS=${SKIP_COLORS:-"$(seq -s' ' 37 40) $(seq -s' ' 47 90) 98 99 103"}
 MAX_COLOR=${MAX_COLOR:-106}
 MIN_COLOR=${MIN_COLOR:-$COLOR}
 
-
 next_color() {
   color=$(($1+1)) 
 
@@ -28,19 +29,15 @@ next_color() {
 }
 
 color() { pattern="$1"
-# >&2 echo "pattern=[$pattern]"
-  GREP_COLOR="${COLOR_EFFECTS}${COLOR}" grep -E --color=always --line-buffered "${pattern}|$" | {
-    shift
-    if [ $# -gt 0 ]; then
+  # >&2 echo "COLOR=[$COLOR] pattern=[$pattern]"
+  if [ $# -gt 0 ]; then
+    GREP_COLOR="${COLOR_EFFECTS}${COLOR}" grep -E --color=always --line-buffered "${pattern}|$" | {
+      shift
       COLOR="$(next_color "$COLOR")" color "$@"
-    else
-      cat
-    fi
-  }
+    }
+  else
+    cat
+  fi
 }
 
-if [ $# -gt 0 ]; then
-  color "$@"
-else
-  cat
-fi
+color "$@"

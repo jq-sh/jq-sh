@@ -5,9 +5,6 @@
 # ... dunno what to do ... maybe if jq had an `eval` it might work,
 # but - meh ... this'll do
 
-resource=${resource:-}
-resources=${resources:-${resource}s}
-
 reverse="${reverse:-false}"
 
 sort_by_expression() {
@@ -19,17 +16,13 @@ sort_by_expression() {
 }
 sort_by_expression=${sort_by_expression:-$(sort_by_expression "$*")}
 
-jq --compact-output \
-  --arg resource "$resource" \
-  --arg resources "$resources"  \
-"
+jq --compact-output "
   if type == \"array\" then
-                     ( sort_by($sort_by_expression) | if $reverse then reverse else . end )[]
-  else if has(\$resources) then
-    .[\$resources] | ( sort_by($sort_by_expression) | if $reverse then reverse else . end )[]
-  else if has(\$resource) then
-    .[\$resource]
+    (
+      sort_by($sort_by_expression) |
+      if $reverse then reverse else . end
+    )[]
   else
     .
-  end end end
+  end
 "

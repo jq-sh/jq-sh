@@ -6,19 +6,7 @@ opts --null-input --raw-output
 __JQ__
 
 
-def dig_keys:
-  . as $obj |
-  reduce (keys[]) as $k ([];
-    . + (
-      if ($obj[$k] | type == "object") then
-        $obj[$k] | dig_keys | map("\($k).\(.)")
-      else
-        [$k]
-      end
-    )
-  )
-;
-
+include "json2table";
 
 input as [$first_obj] ?// $first_obj |
 $first_obj                           |

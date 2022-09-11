@@ -9,7 +9,6 @@ arg         missing_key          ${missing_key:-¿}
 __JQ__
 
 
-def row(cols):
-  [foreach cols[] as $col (.; .; getpath($col / ".") // $missing_key | tostring)];
+include "json2table";
 
-(inputs | row($cols)) | @tsv
+inputs | data_row($cols) | @tsv

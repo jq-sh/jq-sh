@@ -45,4 +45,18 @@ EOF
 └─────┴─────────┴─────────────┘
 EOF
   end
+
+  describe 'with truncations'
+    matches_expected 'tsv2table null 7 null' \
+<<-EOF
+┌─────┬───────┬─────────────┐
+│th1  │th2    │tableheading3│
+├─────┼───────┼─────────────┤
+│tr1.1│       │tr1.3        │
+│tr2.1│ta....2│tablerow2.3  │
+│     │       │             │
+│     │       │tr4.3        │
+└─────┴───────┴─────────────┘
+EOF
+  end
 end

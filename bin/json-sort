@@ -17,6 +17,8 @@ sort_by_expression() {
 sort_by_expression=${sort_by_expression:-$(sort_by_expression "$*")}
 
 jq --compact-output "
+  # empty = (\"$sort_by_expression\" | debug) |
+
   if type == \"array\" then
     (
       sort_by($sort_by_expression) |

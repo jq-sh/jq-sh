@@ -101,12 +101,15 @@ color_terms_for() { local resource=$1
   color_terms_key="${resource}_color_terms[@]"
   resource_color_terms=( "${!color_terms_key}" )
   if [[ -n "${resource_color_terms_str}" ]]; then
-    IFS=" " read -r -a resource_color_terms <<< "${resource_color_terms_str}"
+    # IFS=$'\n' read -r -a resource_color_terms <<< "${resource_color_terms_str}"
+    resource_color_terms=( $(echo "${resource_color_terms_str}") )
+
     term "${resource_color_terms[@]}"
   else
     if [[ -z "${resource_color_terms[*]}" ]]; then
       if [[ -n "${color_terms_str}" ]]; then
-        IFS=" " read -r -a color_terms <<< "${color_terms_str}"
+        # IFS=$'\n' read -r -a color_terms <<< "${color_terms_str}"
+        color_terms=( $(echo "${color_terms_str}") )
         term "${color_terms[@]}"
       else
         term "${color_terms[@]}"
@@ -119,12 +122,14 @@ color_terms_for() { local resource=$1
   color_terms_add_key="${resource}_color_terms_add[@]"
   resource_color_terms_add=( "${!color_terms_add_key}" )
   if [[ -n "${resource_color_terms_add_str}" ]]; then
-    IFS=" " read -r -a resource_color_terms_add <<< "${resource_color_terms_add_str}"
+    # IFS=$'\n' read -r -a resource_color_terms_add <<< "${resource_color_terms_add_str}"
+    resource_color_terms_add=( $(echo "${resource_color_terms_add_str}") )
     term "${resource_color_terms_add[@]}"
   else
     if [[ -z "${resource_color_terms_add[*]}" ]]; then
       if [[ -n "${color_terms_add_str}" ]]; then
-        IFS=" " read -r -a color_terms_add <<< "${color_terms_add_str}"
+        # IFS=$'\n' read -r -a color_terms_add <<< "${color_terms_add_str}"
+        color_terms_add=( $(echo "${color_terms_add_str}") )
 
         term "${color_terms_add[@]}"
       else

@@ -9,17 +9,6 @@ arg       resources    ${resources:-${resource}s}
 __JQ__
 
 
-def json_objects_array:
-  if type == "array" then
-    .
-  else if has($resources) then
-    .[$resources]
-  else if has($resource) then
-    [.[$resource]]
-  else
-    [., inputs]
-  end end end // {}
-;
-
+include "json2table";
 
 json_objects_array

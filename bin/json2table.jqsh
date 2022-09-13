@@ -4,7 +4,6 @@ opts --compact-output --raw-output
 
 arg       title        "${title}"
 arg       resource     $resource
-arg       resources    ${resources:-${resource}s}
 arg       missing_key  ${missing_key:-¿}
 arg_int   max_width    ${max_width:-${COLUMNS:-0}}
 

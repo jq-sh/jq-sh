@@ -2,8 +2,7 @@
 
 # opts --compact-output --raw-output
 
-arg       resource     $resource
-arg       resources    ${resources:-${resource}s}
+arg       resource        $resource
 
 
 __JQ__

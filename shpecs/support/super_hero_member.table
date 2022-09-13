@@ -2,7 +2,7 @@
 title="Super Heroes"
 cols=(
   name
-  secret.identity:secret_identity
+  secret.identity:secretIdentity
   powers
   age
 )

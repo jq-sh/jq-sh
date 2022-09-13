@@ -195,10 +195,10 @@ def data_rows($keys):
 def json_objects_array:
   if type == "array" then
     .
-  else if has($resources) then
-    .[$resources]
   else if has($resource) then
     [.[$resource]]
+  else if has("\($resource)s") then
+    [.["\($resource)s"]]
   else
     [., inputs]
   end end end // {}

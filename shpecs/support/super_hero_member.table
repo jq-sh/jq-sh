@@ -1,26 +1,20 @@
 #!/usr/bin/env json2table
-
 title="Super Heroes"
-
 cols=(
   name
   secret.identity:secret_identity
   powers
   age
 )
-
 color_terms=(
   Eternal Fl
   Madame Uppercut
   'Dan Jukes'
 )
-
 sort_by=(
   name
 )
 
-
 __JQ__
-
 
 .powers |= join(", ")

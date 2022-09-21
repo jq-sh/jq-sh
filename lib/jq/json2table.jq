@@ -98,6 +98,22 @@ def truncate_rows(cell_widths):
   )
 ;
 
+def truncate_rows(cell_widths; end_sizes):
+  map(
+    [
+      foreach .[] as $cell (-1; . + 1;
+        cell_widths[.] as $width    |
+        end_sizes[.]   as $end_size |
+        if $width then
+          $cell | if $end_size then truncate($width; $end_size) else truncate($width) end
+        else
+          $cell
+        end
+      )
+    ]
+  )
+;
+
 def col_sizes:
   transpose | map(map(length) | max)
 ;
@@ -171,12 +187,14 @@ def new_col:
     "
       (?<key>[a-zA-Z][^ %:]*)
       (%(?<truncation>[0-9]+))?
+      (,(?<end_size>[0-9]+))?
       ((?<heading>:[a-zA-Z][^ ]*))?
     ";
     "x"
   ) |
   .key as $key |
   if .truncation then .truncation |= tonumber else .                end |
+  if .end_size   then .end_size   |= tonumber else .                end |
   if .heading    then .                       else .heading |= $key end
 ;
 
@@ -209,10 +227,11 @@ def table:
   ( $col_objects | map(.key       ) ) as $keys        |
   ( $col_objects | map(.heading   ) ) as $headings    |
   ( $col_objects | map(.truncation) ) as $truncations |
+  ( $col_objects | map(.end_size  ) ) as $end_sizes   |
 
-  [$headings, data_rows($keys)] |
-  truncate_rows($truncations)   |
-  shrink_rows                   |
+  [$headings, data_rows($keys)]           |
+  truncate_rows($truncations; $end_sizes) |
+  shrink_rows                             |
 
   render_table
 ;

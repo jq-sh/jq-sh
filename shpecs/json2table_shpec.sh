@@ -74,6 +74,17 @@ EOF
 │Eternal Flame  │["Immortality","Heat Immu..."]│
 └───────────────┴──────────────────────────────┘
 EOF
+
+        matches_expected 'json2table name powers%30,10' \
+<<-EOF
+┌───────────────┬──────────────────────────────┐
+│name           │powers                        │
+├───────────────┼──────────────────────────────┤
+│Molecule Man   │["Radiation resis...on blast"]│
+│Madame Uppercut│["Million tonne p...reflexes"]│
+│Eternal Flame  │["Immortality","H...l travel"]│
+└───────────────┴──────────────────────────────┘
+EOF
       end
 
       describe 'using max_width'

@@ -3,12 +3,13 @@ export PATH="./shpecs/support:$PATH"
 
 input_file=${input_file:-"/dev/null"}
 
+input() { eval "${input_cmd:-cat}" < "${input_file}"; }
+subject() { eval "$cmd"; }
+
 matches_expected() { local cmd="${cmd:-$1}"
   read -r -d '' expected_output
 
   describe '`'"${cmd:-echo}"'`'
-    subject() { eval "$cmd"; }
-    input() { eval "${input_cmd:-cat}" < "${input_file}"; }
 
     it "matches expected"
       diff -u \

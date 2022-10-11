@@ -11,8 +11,25 @@ def dig_keys:
   )
 ;
 
+# `haspath` implementation from  https://github.com/stedolan/jq/issues/2062
+def haspath($path):
+  def h:
+    . as [$json, $p]
+    | (($p|length)==0) or
+      ($json | (has($p[0]) and ( [getpath([$p[0]]), $p[1:] ] | h)));
+  [., $path] | h
+;
+
 def data_row(cols):
-  [foreach cols[] as $col (.; .; getpath($col / ".") // $missing_key | tostring)]
+  [
+    foreach cols[] as $col (.; .;
+      if haspath($col / ".") then
+        getpath($col / ".") | tostring
+      else
+        $missing_key
+      end
+    )
+  ]
 ;
 
 def truncate(max; end_size):

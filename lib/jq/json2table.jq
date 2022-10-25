@@ -20,11 +20,16 @@ def haspath($path):
   [., $path] | h
 ;
 
+def tocell:
+  [ tostring ] |
+  @tsv
+;
+
 def data_row(cols):
   [
     foreach cols[] as $col (.; .;
       if haspath($col / ".") then
-        getpath($col / ".") | tostring
+        getpath($col / ".") | tocell
       else
         $missing_key
       end

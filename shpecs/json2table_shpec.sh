@@ -126,6 +126,20 @@ EOF
       end
     end
 
+    describe 'multi-line data'
+      input_cmd='jq --compact-output ".members[] | .powers |= join(\"\n\")"'
+      matches_expected 'json2table name powers' \
+<<-EOF
+┌───────────────┬───────────────────────────────────────────────────────────────────────────┐
+│name           │powers                                                                     │
+├───────────────┼───────────────────────────────────────────────────────────────────────────┤
+│Molecule Man   │Radiation resistance\nTurning tiny\nRadiation blast                        │
+│Madame Uppercut│Million tonne punch\nDamage resistance\nSuperhuman reflexes                │
+│Eternal Flame  │Immortality\nHeat Immunity\nInferno\nTeleportation\nInterdimensional travel│
+└───────────────┴───────────────────────────────────────────────────────────────────────────┘
+EOF
+    end
+
     describe 'sort_by'
       matches_expected 'sort_by="gender age" json2table name gender age' \
 <<-EOF

@@ -207,7 +207,7 @@ def render_table:
 def new_col:
   capture(
     "
-      (?<key>[_a-zA-Z][^ %:]*)
+      (?<key>[^%:]*)
       (%(?<truncation>[0-9]+))?
       (,(?<end_size>[0-9]+))?
       ((?<heading>:[a-zA-Z][^ ]*))?
@@ -245,7 +245,8 @@ def json_objects_array:
 ;
 
 def table:
-  ( cols         | map(new_col    ) ) as $col_objects |
+  ( cols                            ) as $cols        |
+  ( $cols        | map(new_col    ) ) as $col_objects |
   ( $col_objects | map(.key       ) ) as $keys        |
   ( $col_objects | map(.heading   ) ) as $headings    |
   ( $col_objects | map(.truncation) ) as $truncations |

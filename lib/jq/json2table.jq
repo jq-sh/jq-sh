@@ -207,7 +207,7 @@ def render_table:
 def new_col:
   capture(
     "
-      (?<key>[a-zA-Z][^ %:]*)
+      (?<key>[_a-zA-Z][^ %:]*)
       (%(?<truncation>[0-9]+))?
       (,(?<end_size>[0-9]+))?
       ((?<heading>:[a-zA-Z][^ ]*))?
@@ -250,6 +250,9 @@ def table:
   ( $col_objects | map(.heading   ) ) as $headings    |
   ( $col_objects | map(.truncation) ) as $truncations |
   ( $col_objects | map(.end_size  ) ) as $end_sizes   |
+
+  # DEBUGGING...
+  # empty = ({$cols, $col_objects, $keys, $headings, $truncations, $end_sizes} | debug) |
 
   [$headings, data_rows($keys)]           |
   truncate_rows($truncations; $end_sizes) |

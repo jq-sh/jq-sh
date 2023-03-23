@@ -11,7 +11,9 @@ openssl_algorithm() {
 
 compute_signature() { local secret="$1"; openssl_algorithm="${2:-sha512}"
   # Is it possible to remove the openssl dependency and implment a hmac function in jq to calculate the signature there?
-  openssl "$openssl_algorithm" -binary -hmac "$secret" | base64 | sed -e 's/\+/-/g' -e 's/\//_/g' -e 's/=//g'
+  openssl "$openssl_algorithm" -binary -hmac "$secret" |
+    base64 |
+    tr -d '=' | tr '/+' '_-' | tr -d '\n'
 }
 
 secret="${secret:?\`secret\` ENV var is required to check signature}"

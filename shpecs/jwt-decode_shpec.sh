@@ -46,4 +46,20 @@ EOF
 EOF
     end
   end
+
+  describe "HS512"
+    input_file='shpecs/support/token-512.jwt'
+
+    describe "verifying signature"
+      matches_expected "2>&1 secret=your-512-bit-secret jwt-decode" \
+<<-EOF
+["DEBUG:",{"header":{"alg":"HS512","typ":"JWT"},"encoded_signature":"_LT96BNfks8L32sdff8BYsexuZA8W0tTY4FPJORP9JYvtCyOT8kZ-i0HDA8jrIVM2O4VVbyIFWrmtz4ApOJmUQ","computed_signature":"fpBgQAuMg9utEahHrKdzTI1wtcCPyKKro5pao4ua8xH5mKZydnl66BJMlhRmXP4xSA5UM825vCjIvhjscRkQjg","signature_verified":false}]
+{
+  "sub": "1234567890",
+  "name": "John Doe 512",
+  "iat": 1516239022
+}
+EOF
+    end
+  end
 end

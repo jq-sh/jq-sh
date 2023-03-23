@@ -1,0 +1,50 @@
+#!/usr/bin/env jq-sh
+set -ou pipefail
+
+openssl_algorithm() {
+  alg="$(echo "$1" | jq --raw-input --raw-output '@base64d | fromjson | .alg')"
+  case $alg in
+    # HS256) echo "sha256" ;;
+    *) echo $alg | sed 's/^HS/sha/' ;;
+  esac
+}
+
+compute_signature() { local secret="$1"; openssl_algorithm="${2:-sha512}"
+  # Is it possible to remove the openssl dependency and implment a hmac function in jq to calculate the signature there?
+  openssl "$openssl_algorithm" -binary -hmac "$secret" | base64 | sed -e 's/\+/-/g' -e 's/\//_/g' -e 's/=//g'
+}
+
+secret="${secret:?\`secret\` ENV var is required to check signature}"
+
+IFS=. read -r encoded_header encoded_claims encoded_signature
+
+
+opts --null-input --raw-output
+
+arg secret             "$secret"
+arg encoded_header     "$encoded_header"
+arg encoded_claims     "$encoded_claims"
+arg encoded_signature  "$encoded_signature"
+arg computed_signature "$(
+  echo -n "${encoded_header}.${encoded_claims}" |
+    compute_signature "$secret" "$(openssl_algorithm "$encoded_header")"
+)"
+
+__JQ__
+
+def urldecode:
+  gsub("-"  ; "+") |
+  gsub("_"  ; "/") |
+  gsub("%3D"; "=")
+;
+
+def base64urld: urldecode | @base64d;
+
+def header:  base64urld | fromjson;
+             
+def claims: base64urld | fromjson;
+
+$encoded_header | header                    as $header             |
+($encoded_signature == $computed_signature) as $signature_verified |
+empty = ({$header, $encoded_signature, $computed_signature, $signature_verified} | debug) |
+$encoded_claims | claims

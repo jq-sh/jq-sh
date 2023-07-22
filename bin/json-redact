@@ -1,10 +1,10 @@
 #!/usr/bin/env jq-sh
-# Example usages:
-## redact created_at, updated_at with default MAX_LENGTH (3)
-#  `              json-redact created_at updated_at`
+# --help
+## json-redact
 #
-## redact created_at, updated_at with no MAX_LENGTH
-#  `MAX_LENGTH=-1 json-redact created_at updated_at`
+### EXAMPLES
+# * `              json-redact created_at updated_at` # redact created_at, updated_at with default MAX_LENGTH (3)
+# * `MAX_LENGTH=-1 json-redact created_at updated_at` # redact created_at, updated_at with no MAX_LENGTH
 
 
 opts --unbuffered --raw-output

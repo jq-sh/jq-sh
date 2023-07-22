@@ -1,5 +1,6 @@
-#!/usr/bin/env bash
-# This jq / sh hybrid is to make passing arguments into jq a little easier.
+#!/usr/bin/env bash--script
+# --help
+## jq-sh
 
 export JQSH_HOME="${BASH_SOURCE[0]%/*}/.."
 export JQSH_LIB="${JQSH_HOME}/lib/jq"
@@ -31,7 +32,7 @@ arg_boolean() {
 }
 
 arg_array() { local name=$1; shift
-  argjson "$name" "$(printf '%s\n' "${@}" | values2json)"
+  argjson "$name" "$(printf '%s\n' "${@:-}" | values2json)"
 }
 
 arg() { local name=$1; shift
@@ -71,23 +72,29 @@ values2json() {
 __JQ__() {
   # TODO maybe this could be improved?
   echo -n "'$(
-    sed -n '/^__JQ__$/, ${//!p;}' "$script" |
+    sed -n '/^__JQ__$/, ${//!p;}' "$SCRIPT" |
     grep -v '^#'
   )'"
   exit
 }
 
 module_dir() {
-  echo "$(dirname "${script}")/../lib"
+  echo "$(dirname "${SCRIPT}")/../lib"
 }
 
 
-script="$1"; shift
+SCRIPT="$1"; shift
 
-if grep -q '^__JQ__$' "$script"; then
-  # shellcheck disable=SC1090
-  ${DEBUG:-false} && >&2 echo jq ${opts:-} -L~/.jq -L../lib/jq -L../lib -L"${JQSH_LIB}" -L"$(module_dir)" "$(source "$script")"
-                         eval jq ${opts:-} -L~/.jq -L../lib/jq -L../lib -L"${JQSH_LIB}" -L"$(module_dir)" "$(source "$script")"
+if [[ "${1:-}" == --help ]]; then
+  SCRIPT=$SCRIPT help
+  exit
+fi
+
+if grep -q '^__JQ__$' "$SCRIPT"; then
+  # shellcheck disable=SC1090,SC2086
+  ${DEBUG:-false} && >&2 echo jq ${opts:-} -L~/.jq -L../lib/jq -L../lib -L"${JQSH_LIB}" -L"$(module_dir)" "$(source "$SCRIPT" "$@")"
+  # shellcheck disable=SC1090,SC2086
+                         eval jq ${opts:-} -L~/.jq -L../lib/jq -L../lib -L"${JQSH_LIB}" -L"$(module_dir)" "$(source "$SCRIPT" "$@")"
 
 else
   cat

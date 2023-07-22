@@ -1,16 +1,15 @@
-#!/bin/sh
-# shellcheck disable=SC2215
-
+#!/usr/bin/env bash--script
 # --help
+## color
+#
 # Its like grep but doesn't filter out lines & each search term gets its own color!
 #           
-# Example usages:
-#  * echo hello world             |                               color he                 wo         lo
-#  * while date; do sleep 1; done |                               color '^[A-Z][a-z][a-z]'            ' [A-Z][a-z][a-z]'  ':[0-9][0-9]:' '[0-9]'{0..9}' '
-#  * while date; do sleep 1; done |                               color '^[A-Z][a-z][a-z]' SKIP_GREEN ' [A-Z][a-z][a-z]'  ':[0-9][0-9]:' '[0-9]'{0..9}' '
-#  * while date; do sleep 1; done |                      COLOR=42 color '^[A-Z][a-z][a-z]'            ' [A-Z][a-z][a-z]'  ':[0-9][0-9]:' '[0-9]'{0..9}' '
-#  * while date; do sleep 1; done | COLOR_EFFECTS="3;4;" COLOR=42 color '^[A-Z][a-z][a-z]'            ' [A-Z][a-z][a-z]'  ':[0-9][0-9]:' '[0-9]'{0..9}' '
---help "$0" "$@" && exit
+### EXAMPLES
+# * `echo hello world             |                               color he                 wo         lo`
+# * `while date; do sleep 1; done |                               color '^[A-Z][a-z][a-z]'            ' [A-Z][a-z][a-z]'  ':[0-9][0-9]:' '[0-9]'{0..9}' '`
+# * `while date; do sleep 1; done |                               color '^[A-Z][a-z][a-z]' SKIP_GREEN ' [A-Z][a-z][a-z]'  ':[0-9][0-9]:' '[0-9]'{0..9}' '`
+# * `while date; do sleep 1; done |                      COLOR=42 color '^[A-Z][a-z][a-z]'            ' [A-Z][a-z][a-z]'  ':[0-9][0-9]:' '[0-9]'{0..9}' '`
+# * `while date; do sleep 1; done | COLOR_EFFECTS="3;4;" COLOR=42 color '^[A-Z][a-z][a-z]'            ' [A-Z][a-z][a-z]'  ':[0-9][0-9]:' '[0-9]'{0..9}' '`
 
 COLOR=${COLOR:-31}                 # Defaults to red
 COLOR_EFFECTS=${COLOR_EFFECTS:-1;} # Defaults to bold
@@ -28,7 +27,7 @@ next_color() {
   [ "$color" -gt "$MAX_COLOR" ] && echo "$MIN_COLOR" || echo "$color"
 }
 
-color() { pattern="$1"
+color() { pattern="${1:-}"
   # >&2 echo "COLOR=[$COLOR] pattern=[$pattern]"
   if [ $# -gt 0 ]; then
     GREP_COLOR="${COLOR_EFFECTS}${COLOR}" grep -E --color=always --line-buffered "${pattern}|$" | {

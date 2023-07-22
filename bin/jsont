@@ -1,2 +1,7 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash--script
+# --help
+# jsont
+#
+# JSON templating helper
+
 opts="--null-input --compact-output" jq-sh "$@"

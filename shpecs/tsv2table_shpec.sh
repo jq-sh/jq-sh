@@ -1,12 +1,12 @@
 #!/usr/bin/env shpec
+# shellcheck disable=SC1091
 source shpecs/shpec_helper.sh
 
 describe "tsv2table"
-  input_file='shpecs/support/data.tsv'
-  input_cmd='cat'
+  input_file() { echo 'shpecs/support/data.tsv'; }
+  input_cmd() { cat; }
 
-  matches_expected 'tsv2table' \
-<<-EOF
+  matches_expected 'tsv2table' <<-EOF
 ┌─────┬───────────┬─────────────┐
 │th1  │th2        │tableheading3│
 ├─────┼───────────┼─────────────┤
@@ -17,9 +17,8 @@ describe "tsv2table"
 └─────┴───────────┴─────────────┘
 EOF
 
-  describe 'with $title'
-    matches_expected 'title=title1 tsv2table' \
-<<-EOF
+  describe "with \$title"
+    matches_expected 'title=title1 tsv2table' <<-EOF
 title1
 ┌─────┬───────────┬─────────────┐
 │th1  │th2        │tableheading3│
@@ -30,11 +29,10 @@ title1
 │     │           │tr4.3        │
 └─────┴───────────┴─────────────┘
 EOF
-  end
+  end_
 
-  describe 'with $max_width'
-    matches_expected 'max_width=30 tsv2table' \
-<<-EOF
+  describe "with \$max_width"
+    matches_expected 'max_width=30 tsv2table' <<-EOF
 ┌─────┬─────────┬─────────────┐
 │th1  │th2      │tableheading3│
 ├─────┼─────────┼─────────────┤
@@ -44,11 +42,10 @@ EOF
 │     │         │tr4.3        │
 └─────┴─────────┴─────────────┘
 EOF
-  end
+  end_
 
   describe 'with truncations'
-    matches_expected 'tsv2table null 7 null' \
-<<-EOF
+    matches_expected 'tsv2table null 7 null' <<-EOF
 ┌─────┬───────┬─────────────┐
 │th1  │th2    │tableheading3│
 ├─────┼───────┼─────────────┤
@@ -58,5 +55,5 @@ EOF
 │     │       │tr4.3        │
 └─────┴───────┴─────────────┘
 EOF
-  end
-end
+  end_
+end_

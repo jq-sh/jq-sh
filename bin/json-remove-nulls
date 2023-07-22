@@ -1,4 +1,9 @@
 #!/usr/bin/env jq-sh
+# --help
+## json-remove-nulls
+#
+### EXAMPLES
+# * `json-remove-nulls`
 
 
 __JQ__

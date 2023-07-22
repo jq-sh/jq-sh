@@ -1,9 +1,12 @@
-export PATH=./bin:$PATH
+#!/usr/bin/env bash
+#
+export PATH="./bin:$PATH"
 export PATH="./shpecs/support:$PATH"
 
-input_file=${input_file:-"/dev/null"}
+input_file() { echo "/dev/null"; }
+input_cmd()  { cat; }
 
-input() { eval "${input_cmd:-cat}" < "${input_file}"; }
+input() { input_cmd < "$(input_file)"; }
 subject() { eval "$cmd"; }
 
 matches_expected() { local cmd="${cmd:-$1}"
@@ -24,8 +27,8 @@ matches_expected() { local cmd="${cmd:-$1}"
              fi
         )
       assert equal $? 0
-    end
-  end
+    end_
+  end_
 }
 
 matches_expected_with_colors() {
@@ -39,8 +42,8 @@ xmatches_expected() { local cmd="${cmd:-$1}"
   describe '`'"${cmd:-echo}"'`'
     it 
       iecho "[33;1mpending[0m"
-    end
-  end
+    end_
+  end_
 }
 
 # Darwin is adding some weird ^[k control characters with grep's colors that aren't on linux

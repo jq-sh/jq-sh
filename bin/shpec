@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Ripped from https://github.com/rylnd/shpec
 
-
 indent() {
   printf '%*s' $(( (_shpec_indent - 1) * 2))
 }
@@ -27,6 +26,11 @@ end() {
   [ $_shpec_indent -ge 0 ] && return 0
   echo >& 2 "shpec: $_shpec_file: unexpected 'end'"
   exit 1
+}
+
+# shellchek doesn't seem to like `end` for some reason?
+end_() {
+  end
 }
 
 end_describe() {

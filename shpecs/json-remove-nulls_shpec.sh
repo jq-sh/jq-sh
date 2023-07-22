@@ -1,13 +1,21 @@
 #!/usr/bin/env shpec
+# shellcheck disable=SC1091
 source shpecs/shpec_helper.sh
 
 
 describe "json-remove-nulls"
-  input_file='shpecs/support/super_heroes.json'
-  input_cmd='jq ".members |= null"'
+  matches_expected 'json-remove-nulls --help' <<-EOF
+json-remove-nulls (v2023.07.22)
 
-  matches_expected 'json-remove-nulls' \
-<<-EOF
+## json-remove-nulls
+
+### EXAMPLES
+* \`json-remove-nulls\`
+EOF
+
+  input_file() { echo 'shpecs/support/super_heroes.json'; }
+  input_cmd()  { jq '.members |= null'; }
+  matches_expected 'json-remove-nulls' <<-EOF
 {
   "squadName": "Super hero squad",
   "active": true,
@@ -18,4 +26,4 @@ describe "json-remove-nulls"
   }
 }
 EOF
-end
+end_

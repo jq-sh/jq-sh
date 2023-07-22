@@ -2,7 +2,7 @@
 
 opts --null-input --raw-output
 
-arg_array excluded_keys ${@:null}
+arg_array excluded_keys ${@}
 arg_array keys          $(identify_cols)
 
 

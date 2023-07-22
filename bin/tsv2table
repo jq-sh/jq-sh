@@ -2,7 +2,7 @@
 
 opts --null-input --raw-input --raw-output
 
-arg       title                "${title}"
+arg       title                "${title:-}"
 arg_int   max_width            ${max_width:-${COLUMNS:-0}}
 arg_jsonl truncations          $@
 

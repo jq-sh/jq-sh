@@ -1,8 +1,8 @@
 #!/usr/bin/env jsont
 
-members=(
-
-)
+member() {
+  member.jsont
+}
 
 arg         squadName  "${squadName:-Super hero squad}"
 arg_boolean active     "${active:-true}"

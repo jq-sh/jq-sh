@@ -40,7 +40,7 @@ print() {
 
 error() {
   color=31 info "$@"
-  exit 1
+  ${without_help:-true} && exit $WITHOUT_HELP || exit 1
 }
 
 eval_cmd() {

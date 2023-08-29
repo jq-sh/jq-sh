@@ -10,7 +10,7 @@ markdown_highlighter() {
 }
 
 timestamp() {
-  date +"${DATE_FORMAT:-%Y-%m-%dT%H:%M:%SZ}"
+  date -u +"${DATE_FORMAT:-%Y-%m-%dT%H:%M:%SZ}"
 }
 
 info() {

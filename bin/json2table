@@ -1,6 +1,6 @@
 #!/usr/bin/env bash--script
 # --help
-# json2table [col...]
+## json2table [col...]
 #
 # For examples see:
 # * https://github.com/jq-sh/jq-sh/blob/main/screencasts/json2table.md

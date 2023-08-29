@@ -4,7 +4,7 @@ source shpecs/shpec_helper.sh
 
 describe "color"
   matches_expected 'color --help' <<-EOF
-color (v2023.07.22)
+color (v2023.08.29)
 
 ## color
 

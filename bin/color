@@ -3,7 +3,7 @@
 ## color
 #
 # Its like grep but doesn't filter out lines & each search term gets its own color!
-#           
+#
 ### EXAMPLES
 # * `echo hello world             |                               color he                 wo         lo`
 # * `while date; do sleep 1; done |                               color '^[A-Z][a-z][a-z]'            ' [A-Z][a-z][a-z]'  ':[0-9][0-9]:' '[0-9]'{0..9}' '`
@@ -18,7 +18,7 @@ MAX_COLOR=${MAX_COLOR:-106}
 MIN_COLOR=${MIN_COLOR:-$COLOR}
 
 next_color() {
-  color=$(($1+1)) 
+  color=$(($1+1))
 
   while echo "$SKIP_COLORS" | grep -w -q "$color"; do
     color=$((color+1))

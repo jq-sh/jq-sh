@@ -52,7 +52,7 @@ cmd() {
   basename "$SCRIPT"
 }
 
-version() { 
+version() {
   grep '^# --version' "$SCRIPT" | sed 's/^# --version[ ]*//' ||
   date -r "$SCRIPT" "+%Y.%m.%d"
 }

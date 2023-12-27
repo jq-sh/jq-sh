@@ -1,7 +1,19 @@
 #!/usr/bin/env bash--script
 # --help
-## jsont
+## jsont [kwargs...]
 #
 # JSON templating helper
 
-opts="--null-input --compact-output" jq-sh "$@"
+
+args=()
+for arg in "$@"; do
+  if [[ $arg =~ ^[a-zA-Z0-9_]+=.*$ ]]; then
+    # shellcheck disable=SC2163
+    export "$arg"
+  else
+    args+=("$arg")
+  fi
+done
+
+opts="--null-input --compact-output" jq-sh "${args[@]}" |
+  jq --compact-output 'del(..|select(. == {}))'

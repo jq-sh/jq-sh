@@ -210,7 +210,7 @@ else
     resource="$resource" json_objects_array                          |
 
     # we need to pop out to bash to do the sorting
-    # ie. because it doesn't appear to be possible to 
+    # ie. because it doesn't appear to be possible to
     # pass a `sort_by` expression into jq
     json-sort "${sort_by[@]:-}"                                      |
 

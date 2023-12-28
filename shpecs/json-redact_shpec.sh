@@ -6,7 +6,7 @@ describe "json-redact"
   input_file() { echo 'shpecs/support/super_heroes.json'; }
 
   matches_expected 'json-redact --help' <<-EOF
-json-redact (v2023.12.27)
+json-redact (v2023.08.29)
 
 ## json-redact
 

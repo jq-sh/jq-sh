@@ -8,8 +8,7 @@
 args=()
 for arg in "$@"; do
   if [[ $arg =~ ^[a-zA-Z0-9_]+=.*$ ]]; then
-    # shellcheck disable=SC2163
-    export "$arg"
+    export "${arg?}"
   else
     args+=("$arg")
   fi

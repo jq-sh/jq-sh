@@ -28,7 +28,7 @@ describe "jsont"
 }
 EOF
 
-  matches_expected "formed=2015 squadName='Junior Super Heroes' active=false super_heroes.jsont 'member age=30' 'member age=31 name=Rubber\ Girl gender=female' | jq" <<-EOF
+  matches_expected "formed=2015 squadName='Junior Super Heroes' active=false super_heroes.jsont 'member age=30 name=\"Molly Cool Girl\" gender=\"female\"' 'member age=31 name=Rubber\ Girl gender=female' | jq" <<-EOF
 {
   "squadName": "Junior Super Heroes",
   "active": false,
@@ -39,9 +39,9 @@ EOF
   },
   "members": [
     {
-      "name": "Molecule Man",
+      "name": "Molly Cool Girl",
       "age": 30,
-      "gender": "male",
+      "gender": "female",
       "secretIdentity": "Dan Jukes",
       "powers": [
         "Radiation resistance",

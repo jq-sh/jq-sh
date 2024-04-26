@@ -15,9 +15,11 @@ timestamp() {
 
 info() {
   color="${color:-34}"
+  ifs0="$IFS"; IFS=""
   while read -r line; do
     >&2 echo -e "$(${return_cursor:-false} && printf "\r")[$(timestamp)] [${color}m${line}[0m"
   done < <(echo -e "$@")
+  IFS="$ifs0"
 }
 
 info_r() {

@@ -24,7 +24,7 @@ next_color() {
     color=$((color+1))
   done
 
-  [ "$color" -gt "$MAX_COLOR" ] && echo "$MIN_COLOR" || echo "$color"
+  [ "$color" -lt "$MAX_COLOR" ] && echo "$color"
 }
 
 color() { pattern="${1:-}"
@@ -32,11 +32,72 @@ color() { pattern="${1:-}"
   if [ $# -gt 0 ]; then
     GREP_COLOR="${COLOR_EFFECTS}${COLOR}" grep -E --color=always --line-buffered "${pattern}|$" | {
       shift
-      COLOR="$(next_color "$COLOR")" color "$@"
+      COLOR="$(next_color "$COLOR" || echo "$MIN_COLOR")" color "$@"
     }
   else
     cat
   fi
 }
 
-color "$@"
+color_count() {
+  # Nb. currently there's only `25` colors, but lets figure it out dynamically in case our code changes...
+  local colors=("$COLOR")
+  while COLOR="$(next_color "$COLOR")"; do
+    colors+=("$COLOR")
+  done
+  echo $((${#colors[@]} + 1))
+}
+
+
+# From ChatGPT (2024-04-22)...
+# Given arguments
+# eg.
+# ```
+# foo bar baz biz buz goo gar giz guz
+# ```
+# Group them together based on a COUNT
+# So,
+# * `COUNT=3`
+# ```
+# (foo|bar|baz) (biz|buz|goo) (gar|giz|guz)
+# ```
+# * `COUNT=2`
+# ```
+# (foo|baz|buz|gar|guz) (bar|biz|goo|giz)
+# ```
+# * `COUNT=1`
+# ```
+# (foo|bar|baz|biz|buz|goo|gar|giz|guz)
+# ```
+color_grouped() { local args=("$@")
+  COLOR_COUNT=${COLOR_COUNT:-$(color_count)}
+
+  # Initialize arrays for groups
+  declare -a groups
+
+  # Calculate the length of args array
+  args_length=${#args[@]}
+
+  # Distribute arguments into groups based on COUNT
+  for (( i=0; i<args_length; i++ )); do
+    local group_index=$((i % COLOR_COUNT))
+    if [ -z "${groups[group_index]:-}" ]; then
+      groups[group_index]="${args[i]}"
+    else
+      groups[group_index]+="|${args[i]}"
+    fi
+  done
+
+  # put surrounding braces around the groups
+  for (( i=0; i<COLOR_COUNT; i++ )); do
+    if [ -n "${groups[i]:-}" ]; then
+      groups[i]="(${groups[i]})"
+    fi
+  done
+
+  ${DEBUG:-false} && echo groups: "${groups[@]}"
+  color "${groups[@]}"
+}
+
+# color "$@"
+color_grouped "$@"

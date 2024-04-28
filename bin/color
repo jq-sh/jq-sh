@@ -5,7 +5,8 @@
 # Its like grep but doesn't filter out lines & each search term gets its own color!
 #
 ### EXAMPLES
-# * `echo hello world             |                               color he                 wo         lo`
+# * `echo -e "help hello worlod \nwhoa" |                         color 'whoa|wo'          ' he'      'lo '`
+# * `(set -- 'whoa|wo' ' he' 'lo '; IFS=$'\n'; echo "$*")> /tmp/patterns.txt ; echo -e "help hello worlod \nwhoa" | patterns_file=/tmp/patterns.txt color` # read patterns in from a file
 # * `while date; do sleep 1; done |                               color '^[A-Z][a-z][a-z]'            ' [A-Z][a-z][a-z]'  ':[0-9][0-9]:' '[0-9]'{0..9}' '`
 # * `while date; do sleep 1; done |                               color '^[A-Z][a-z][a-z]' SKIP_GREEN ' [A-Z][a-z][a-z]'  ':[0-9][0-9]:' '[0-9]'{0..9}' '`
 # * `while date; do sleep 1; done |                      COLOR=42 color '^[A-Z][a-z][a-z]'            ' [A-Z][a-z][a-z]'  ':[0-9][0-9]:' '[0-9]'{0..9}' '`
@@ -27,16 +28,19 @@ next_color() {
   [ "$color" -lt "$MAX_COLOR" ] && echo "$color"
 }
 
-color() { pattern="${1:-}"
-  # >&2 echo "COLOR=[$COLOR] pattern=[$pattern]"
-  if [ $# -gt 0 ]; then
-    GREP_COLOR="${COLOR_EFFECTS}${COLOR}" grep -E --color=always --line-buffered "${pattern}|$" | {
-      shift
+highlight() {
+  GREP_COLOR="${COLOR_EFFECTS}${COLOR}" grep -E --color=always --line-buffered "$1|$"
+  # ag --case-sensitive --color --color-match "${COLOR_EFFECTS}${COLOR}" "$1|$"
+}
+
+color() { pattern="${1:-}"; shift
+  debug "COLOR=[$COLOR] pattern='$pattern'"
+  highlight "$pattern" |
+    if [ $# -eq 0 ]; then
+      cat
+    else
       COLOR="$(next_color "$COLOR" || echo "$MIN_COLOR")" color "$@"
-    }
-  else
-    cat
-  fi
+    fi
 }
 
 color_count() {
@@ -49,7 +53,6 @@ color_count() {
 }
 
 
-# From ChatGPT (2024-04-22)...
 # Given arguments
 # eg.
 # ```
@@ -59,43 +62,42 @@ color_count() {
 # So,
 # * `COUNT=3`
 # ```
-# (foo|bar|baz) (biz|buz|goo) (gar|giz|guz)
+# foo|bar|baz biz|buz|goo gar|giz|guz
 # ```
 # * `COUNT=2`
 # ```
-# (foo|baz|buz|gar|guz) (bar|biz|goo|giz)
+# foo|baz|buz|gar|guz bar|biz|goo|giz
 # ```
 # * `COUNT=1`
 # ```
-# (foo|bar|baz|biz|buz|goo|gar|giz|guz)
+# foo|bar|baz|biz|buz|goo|gar|giz|guz
 # ```
-color_grouped() { local args=("$@")
+color_grouped() {
   COLOR_COUNT=${COLOR_COUNT:-$(color_count)}
+
+  assign_group() {
+    local group_index=$((i++ % COLOR_COUNT))
+    groups[group_index]="${groups[group_index]:+${groups[group_index]}|}$1"
+  }
 
   # Initialize arrays for groups
   declare -a groups
 
-  # Calculate the length of args array
-  args_length=${#args[@]}
+  # Distribute arguments into groups based on COLOR_COUNT
+  local i=0
+  if [ -s "${patterns_file:-}" ]; then
+    debug "grouping patterns from patterns_file=${patterns_file} ..."
+    while IFS= read -u 3 -r pattern || [ -n "$pattern" ]; do
+      assign_group "$pattern"
+    done 3< "$patterns_file"
+  else
+    debug "grouping patterns from ARGS ..."
+    for pattern in "$@"; do
+      assign_group "$pattern"
+    done
+  fi
 
-  # Distribute arguments into groups based on COUNT
-  for (( i=0; i<args_length; i++ )); do
-    local group_index=$((i % COLOR_COUNT))
-    if [ -z "${groups[group_index]:-}" ]; then
-      groups[group_index]="${args[i]}"
-    else
-      groups[group_index]+="|${args[i]}"
-    fi
-  done
-
-  # put surrounding braces around the groups
-  for (( i=0; i<COLOR_COUNT; i++ )); do
-    if [ -n "${groups[i]:-}" ]; then
-      groups[i]="(${groups[i]})"
-    fi
-  done
-
-  ${DEBUG:-false} && echo groups: "${groups[@]}"
+  debug "groups: $(printf "%q " "${groups[@]}")"
   color "${groups[@]}"
 }
 

@@ -5,7 +5,7 @@ source shpecs/shpec_helper.sh
 
 describe "json-remove-nulls"
   matches_expected 'json-remove-nulls --help' <<-EOF
-json-remove-nulls (v2024.04.26)
+json-remove-nulls (v2023.08.29)
 
 ## json-remove-nulls
 

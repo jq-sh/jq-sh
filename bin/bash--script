@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# color palette
+COLOR_DEBUG=${COLOR_DEBUG:-1} ; color_debug=0
+COLOR_INFO=${COLOR_INFO:-34}  ;  color_info=1
+COLOR_WARN=${COLOR_WARN:-44}  ;  color_warn=2
+COLOR_ERROR=${COLOR_ERROR:-31}; color_error=3
+
+COLOR_PALETTE="${COLOR_PALETTE:-$COLOR_DEBUG $COLOR_INFO $COLOR_WARN $COLOR_ERROR}"
+read -r -a colors <<< "$COLOR_PALETTE"
+
 markdown_highlighter() {
   if command -v bat > /dev/null 2>&1; then
     echo "bat --color=always --style=${BAT_STYLE:-plain} --language=markdown"
@@ -14,10 +23,9 @@ timestamp() {
 }
 
 info() {
-  color="${color:-34}"
   ifs0="$IFS"; IFS=""
   while read -r line; do
-    >&2 echo -e "$(${return_cursor:-false} && printf "\r")[$(timestamp)] [${color}m${line}[0m"
+    >&2 echo -e "$(${return_cursor:-false} && printf "\r")[$(timestamp)] [${color:-${colors[color_info]}}m${line}[0m"
   done < <(echo -e "$@")
   IFS="$ifs0"
 }
@@ -27,12 +35,12 @@ info_r() {
 }
 
 warn() {
-  color="${color:-44}" info "$@"
+  color="${color:-${colors[color_warn]}}" info "$@"
 }
 
 debug() {
   if ${VERBOSE:-false}; then
-    info "$@"
+    color=${color:-${colors[color_debug]}} info "$@"
   fi
 }
 
@@ -41,12 +49,12 @@ print() {
 }
 
 error() {
-  color=31 info "$@"
+  color=${color:-${colors[color_error]}} info "$@"
   ${without_help:-true} && exit $WITHOUT_HELP || exit 1
 }
 
 eval_cmd() {
-  color=1 debug "$@"
+  debug "$@"
   eval "$*"
 }
 

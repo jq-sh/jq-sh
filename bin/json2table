@@ -16,7 +16,9 @@ resource="${resource:-${_resource%.table}}"
 
 
 # Nb. `eval echo "$cols"` allows x.{y1,y2} expansion
-COLS=$(eval echo "${cols:-${@:-}}")
+# COLS=$(eval echo "${cols:-${@:-}}")
+
+COLS="${cols:-${@:-}}"
 SORT_BY=${sort_by:-}
 MISSING_KEY=${MISSING_KEY:-¿}
 TITLE=${title:-}
@@ -208,13 +210,7 @@ else
     # Nb. this is a jqsh script, but we can't do the jq in the
     # main jqsh script because...
     resource="$resource" json_objects_array                          |
-
-    # we need to pop out to bash to do the sorting
-    # ie. because it doesn't appear to be possible to
-    # pass a `sort_by` expression into jq
-    json-sort "${sort_by[@]:-}"                                      |
-
-    resource="$resource" title="$title" json2table.jqsh "${cols[@]:-}" |
+    sort_by="${sort_by[*]:-}" cols="${cols[*]}" resource="$resource" title="$title" json2table.jqsh |
 
     # TODO - reimplement the `color` in jq code,
     # so we don't have to pop back out to bash

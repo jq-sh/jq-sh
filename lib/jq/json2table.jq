@@ -220,28 +220,170 @@ def new_col:
   if .heading    then .                       else .heading |= $key end
 ;
 
+def cols_regex:
+  "(?<sort>[<>])?(?<name>[a-zA-Z0-9_.:%,]+)(?<operator>[<>=!]*)?(?:\"(?<value>[^\"]*)\"|(?<value>[^ \n]+))?"
+;
+
+def col_regex:
+  "(?x)                        # 'x' for extended regex so we can have comments...
+  (
+    (?<sort>[<>])?             # (optional) > descending, < ascending
+    (?<name>[a-zA-Z0-9_.:%,]+) # column name
+    (?<operator>[<>=!]*)       # (optional) equality operator
+    (?<value>                  # (optional) value
+        /.*?/\\S*                # regex value
+      | '[^']*'                  # 'quoted value'
+      | \"[^\"]*\"               # \"quoted value\"
+      | \\S*                     # unqouted value
+    )?
+  )
+  "
+;
+
+def scan_captures(regex; capture_count):
+  [
+    scan(regex)                            |
+    to_entries                             |
+    map(select(.key % capture_count == 0)) |
+    map(.value)[]
+  ]
+;
+
 def cols:
-  if $cols == [""] then
-    (.[0] | dig_keys)
+  if $cols == "" then
+    # If no columns are specified then use all the keys
+    (.[0] | dig_keys | join(" "))
   else
     $cols
   end
+| scan_captures(col_regex; 5)
+| map(capture(col_regex).name)
+;
+
+def env_filter(x):
+  (x // "") |
+  scan_captures(col_regex; 5) |
+  map(
+   capture(col_regex)       |
+    .name     as $name      |
+    .operator as $operator  |
+    .value    as $value_str |
+    # Nb. looks like there's some weird bug that means we *have* to do this here and not below
+    ($value_str | try fromjson catch $value_str) as $value |
+    {
+      (.name): (if .sort then { sort: .sort } else {} end)
+    } |
+    if $operator and $value_str then
+      .[$name].filter |= {
+          value: $value,
+          operator: $operator
+        }
+    else
+      .
+    end
+  ) | add
+;
+
+def filter_json(x):
+  def regex_regex: "^/(?<regex>.*?)/(?<flags>[gimnpslx]*)$";
+
+  env_filter(x) as $f |
+
+  if $f then
+    reduce ($f | keys_unsorted)[] as $name (.;
+      $f[$name].filter as $filter |
+      $f[$name].sort   as $sort   |
+
+      if $filter then
+        $filter.value    as $value    |
+        $filter.operator as $operator |
+        if ($value|type) == "string" and ($value | test(regex_regex)) then
+          # `jq` incorporates the [Oniguruma](https://github.com/kkos/oniguruma/blob/master/doc/RE) regex library.
+          # It is largely compatible with Perl v5.8 regexes.
+          # Pretend that jq has a regex type if the string is surrounded by slashes followed by flags
+          ($value | capture(regex_regex)) as { regex: $regex, flags: $flags } |
+          map(select(.[$name]|test($regex; $flags)))
+        elif $operator ==    "<"  then
+          map(select(.[$name] <  $value))
+        elif $operator ==    "<=" then
+          map(select(.[$name] <= $value))
+        elif $operator ==    "==" or $operator == "=" then
+          map(select(.[$name] == $value))
+        elif $operator ==    ">=" then
+          map(select(.[$name] >= $value))
+        elif $operator ==    ">"  then
+          map(select(.[$name] >  $value))
+        elif $operator ==    "!=" or $operator == "<>" or $operator == "!" then
+          map(select(.[$name] != $value))
+        elif $operator ==    "" then
+          .
+        else
+          empty = ("Invalid operator: \($filter.operator)" | debug) |
+          .
+        end
+      else
+        .
+      end
+    )
+  else
+    .
+  end
+;
+
+def sort_json(str; default_asc):
+  def sort_by_layers(sort_by):
+    if sort_by == [] then .
+    else
+      group_by(.[sort_by[0].name]) | if sort_by[0].desc then reverse else . end |
+      map(sort_by_layers(sort_by[1:]))
+    end | flatten
+  ;
+
+  def env_sort_by(default_asc):
+    def sort_by_regex: "(?<sort>[<>])?(?<name>[a-zA-Z0-9_]+)";
+    if str then
+      [
+        str |
+        scan(sort_by_regex) | (
+            if .[0] == ">" then
+            { desc: true,  name: .[1] }
+          elif .[0] == "<" then
+            { desc: false, name: .[1] }
+          else
+            if default_asc then
+              { desc: false, name: .[1] }
+            else
+              empty
+            end
+          end
+        )
+      ]
+    else
+      []
+    end
+  ;
+
+  sort_by_layers(env_sort_by(default_asc))
 ;
 
 def data_rows($keys):
+  filter_json(env.cols   ) |
+  filter_json(env.sort_by) |
+  sort_json(env.cols   ; false) |
+  sort_json(env.sort_by; true ) |
   map(data_row($keys))[]
 ;
 
 def json_objects_array:
-  if type == "array" then
+    if type == "array" then
     .
-  else if has($resource) then
-    [.[$resource]]
-  else if has("\($resource)s") then
-    [.["\($resource)s"]]
+  elif has($resource) then
+    .[$resource]
+  elif has("\($resource)s") then
+    .["\($resource)s"]
   else
     [., inputs]
-  end end end // {}
+  end // {}
 ;
 
 def table:
@@ -253,7 +395,7 @@ def table:
   ( $col_objects | map(.end_size  ) ) as $end_sizes   |
 
   # DEBUGGING...
-  # empty = ({$cols, $col_objects, $keys, $headings, $truncations, $end_sizes} | debug) |
+  #empty = ({$cols, $col_objects, $keys, $headings, $truncations, $end_sizes} | debug) |
 
   [$headings, data_rows($keys)]           |
   truncate_rows($truncations; $end_sizes) |

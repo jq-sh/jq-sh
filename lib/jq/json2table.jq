@@ -228,20 +228,98 @@ def cols:
   end
 ;
 
+def env_filter:
+  env["filter"] |
+  if . then
+    [
+      scan("(?<sort>[<>])?(?<name>[a-zA-Z0-9_]+)(?<operator>[<>=!]*)?(?:\"(?<value>[^\"]*)\"|(?<value>[^ \n]+))?") |
+       .[0]          as $sort      |
+       .[1]          as $name      |
+       .[2]          as $operator  |
+      (.[3] // .[4]) as $value_str |
+
+      # Nb. looks like there's some weird bug that means we *have* to do this here and not below
+      ($value_str | try fromjson catch $value_str) as $value |
+
+      {
+        ($name): {
+          sort: ($sort // if $operator == null then "<" else $sort end)
+        }
+      } |
+      if $operator and $value_str then
+        .[$name].filter |= {
+            value: $value,
+            operator: $operator
+          }
+      else
+        .
+      end
+    ] | add
+  else
+    {}
+  end
+;
+
+def regex_regex: "^/(?<regex>.*?)/(?<flags>[gimnpslx]*)$";
+
+def filter_json:
+  reduce (env_filter | keys_unsorted)[] as $name (.;
+    env_filter[$name].filter as $filter |
+    env_filter[$name].sort   as $sort   |
+
+    if $filter then
+      $filter.value    as $value    |
+      $filter.operator as $operator |
+      if ($value|type) == "string" and ($value | test(regex_regex)) then
+        # `jq` incorporates the [Oniguruma](https://github.com/kkos/oniguruma/blob/master/doc/RE) regex library.
+        # It is largely compatible with Perl v5.8 regexes.
+        # Pretend that jq has a regex type if the string is surrounded by slashes followed by flags
+        ($value | capture(regex_regex)) as { regex: $regex, flags: $flags } |
+        map(select(.[$name] | match($regex; $flags)))
+      elif $operator ==    "<"  then
+        map(select(.[$name] <  $value))
+      elif $operator ==    "<=" then
+        map(select(.[$name] <= $value))
+      elif $operator ==    "==" or $operator == "=" then
+        map(select(.[$name] == $value))
+      elif $operator ==    ">=" then
+        map(select(.[$name] >= $value))
+      elif $operator ==    ">"  then
+        map(select(.[$name] >  $value))
+      elif $operator ==    "!=" or $operator == "<>" or $operator == "!" then
+        map(select(.[$name] != $value))
+      else
+        empty = ("Invalid operator: \($filter.operator)" | debug) |
+        .
+      end
+    else
+      .
+    end |
+      if $sort == "<" then
+      sort_by($name)
+    elif $sort == ">" then
+      sort_by($name) | reverse
+    else
+      .
+    end
+  )
+;
+
 def data_rows($keys):
+  filter_json |
   map(data_row($keys))[]
 ;
 
 def json_objects_array:
-  if type == "array" then
+    if type == "array" then
     .
-  else if has($resource) then
+  elif has($resource) then
     [.[$resource]]
-  else if has("\($resource)s") then
+  elif has("\($resource)s") then
     [.["\($resource)s"]]
   else
     [., inputs]
-  end end end // {}
+  end // {}
 ;
 
 def table:

@@ -117,6 +117,190 @@ EOF
       end_
     end_
 
+    describe 'filters'
+      describe 'none'
+        matches_expected 'json2table name gender age' <<-EOF
+┌───────────────┬──────┬───────┐
+│name           │gender│age    │
+├───────────────┼──────┼───────┤
+│Molecule Man   │male  │29     │
+│Madame Uppercut│female│39     │
+│Eternal Flame  │female│1000000│
+└───────────────┴──────┴───────┘
+EOF
+      end_
+
+      describe 'sorting'
+        describe 'ascending'
+          matches_expected 'filter="age" json2table name gender age' <<-EOF
+┌───────────────┬──────┬───────┐
+│name           │gender│age    │
+├───────────────┼──────┼───────┤
+│Molecule Man   │male  │29     │
+│Madame Uppercut│female│39     │
+│Eternal Flame  │female│1000000│
+└───────────────┴──────┴───────┘
+EOF
+          matches_expected 'filter="<age" json2table name gender age' <<-EOF
+┌───────────────┬──────┬───────┐
+│name           │gender│age    │
+├───────────────┼──────┼───────┤
+│Molecule Man   │male  │29     │
+│Madame Uppercut│female│39     │
+│Eternal Flame  │female│1000000│
+└───────────────┴──────┴───────┘
+EOF
+        end_
+
+        describe 'descending'
+          matches_expected 'filter=">age" json2table name gender age' <<-EOF
+┌───────────────┬──────┬───────┐
+│name           │gender│age    │
+├───────────────┼──────┼───────┤
+│Eternal Flame  │female│1000000│
+│Madame Uppercut│female│39     │
+│Molecule Man   │male  │29     │
+└───────────────┴──────┴───────┘
+EOF
+        end_
+
+        describe 'sort muiltiple columns'
+          matches_expected 'filter="gender >age" json2table name gender age' <<-EOF
+┌───────────────┬──────┬───────┐
+│name           │gender│age    │
+├───────────────┼──────┼───────┤
+│Eternal Flame  │female│1000000│
+│Madame Uppercut│female│39     │
+│Molecule Man   │male  │29     │
+└───────────────┴──────┴───────┘
+EOF
+        end_
+
+        describe '(sort by gender even though its not in the `cols` list)'
+          matches_expected 'super_hero_member_sort_by="gender age" super_hero_member.table' <<-EOF
+Super Heroes
+┌───────────────┬───────────────┬───────────────────────────────────────────────────────────────────────────┬───────┐
+│name           │:secretIdentity│powers                                                                     │age    │
+├───────────────┼───────────────┼───────────────────────────────────────────────────────────────────────────┼───────┤
+│Madame Uppercut│Jane Wilson    │Million tonne punch, Damage resistance, Superhuman reflexes                │39     │
+│Eternal Flame  │Unknown        │Immortality, Heat Immunity, Inferno, Teleportation, Interdimensional travel│1000000│
+│Molecule Man   │Dan Jukes      │Radiation resistance, Turning tiny, Radiation blast                        │29     │
+└───────────────┴───────────────┴───────────────────────────────────────────────────────────────────────────┴───────┘
+EOF
+        end_
+      end_
+
+      describe 'filtering'
+        describe 'single filter'
+          matches_expected 'filter="gender=female" json2table' <<-EOF
+┌───────┬──────┬───────────────┬───────────────────────────────────────────────────────────────────────────────────┬───────────────┐
+│age    │gender│name           │powers                                                                             │secret.identity│
+├───────┼──────┼───────────────┼───────────────────────────────────────────────────────────────────────────────────┼───────────────┤
+│39     │female│Madame Uppercut│["Million tonne punch","Damage resistance","Superhuman reflexes"]                  │Jane Wilson    │
+│1000000│female│Eternal Flame  │["Immortality","Heat Immunity","Inferno","Teleportation","Interdimensional travel"]│Unknown        │
+└───────┴──────┴───────────────┴───────────────────────────────────────────────────────────────────────────────────┴───────────────┘
+EOF
+        end_
+
+        describe 'regex filter'
+          matches_expected 'filter="name=\"/(Ma.*?m   |   man) # this regex also has ix flags to ignore case, comments & whitespace/ix\"" json2table' <<-EOF
+┌───┬──────┬───────────────┬─────────────────────────────────────────────────────────────────┬───────────────┐
+│age│gender│name           │powers                                                           │secret.identity│
+├───┼──────┼───────────────┼─────────────────────────────────────────────────────────────────┼───────────────┤
+│29 │male  │Molecule Man   │["Radiation resistance","Turning tiny","Radiation blast"]        │Dan Jukes      │
+│39 │female│Madame Uppercut│["Million tonne punch","Damage resistance","Superhuman reflexes"]│Jane Wilson    │
+└───┴──────┴───────────────┴─────────────────────────────────────────────────────────────────┴───────────────┘
+EOF
+        end_
+
+        describe 'multiple filters'
+          matches_expected 'filter="age=39 gender=female" json2table' <<-EOF
+┌───┬──────┬───────────────┬─────────────────────────────────────────────────────────────────┬───────────────┐
+│age│gender│name           │powers                                                           │secret.identity│
+├───┼──────┼───────────────┼─────────────────────────────────────────────────────────────────┼───────────────┤
+│39 │female│Madame Uppercut│["Million tonne punch","Damage resistance","Superhuman reflexes"]│Jane Wilson    │
+└───┴──────┴───────────────┴─────────────────────────────────────────────────────────────────┴───────────────┘
+EOF
+        end_
+
+        describe 'multiple filters on multiple lines'
+          export age=39 gender=female; filter=$(set | grep -E '^(age|gender)')
+          matches_expected "filter='$filter' json2table" <<-EOF
+┌───┬──────┬───────────────┬─────────────────────────────────────────────────────────────────┬───────────────┐
+│age│gender│name           │powers                                                           │secret.identity│
+├───┼──────┼───────────────┼─────────────────────────────────────────────────────────────────┼───────────────┤
+│39 │female│Madame Uppercut│["Million tonne punch","Damage resistance","Superhuman reflexes"]│Jane Wilson    │
+└───┴──────┴───────────────┴─────────────────────────────────────────────────────────────────┴───────────────┘
+EOF
+        end_
+
+        describe 'comparisons'
+          matches_expected 'filter="age<100" json2table name gender age' <<-EOF
+┌───────────────┬──────┬───┐
+│name           │gender│age│
+├───────────────┼──────┼───┤
+│Molecule Man   │male  │29 │
+│Madame Uppercut│female│39 │
+└───────────────┴──────┴───┘
+EOF
+          matches_expected 'filter="age<=39" json2table name gender age' <<-EOF
+┌───────────────┬──────┬───┐
+│name           │gender│age│
+├───────────────┼──────┼───┤
+│Molecule Man   │male  │29 │
+│Madame Uppercut│female│39 │
+└───────────────┴──────┴───┘
+EOF
+          matches_expected 'filter="age==39" json2table name gender age' <<-EOF
+┌───────────────┬──────┬───┐
+│name           │gender│age│
+├───────────────┼──────┼───┤
+│Madame Uppercut│female│39 │
+└───────────────┴──────┴───┘
+EOF
+          matches_expected 'filter="age>=39" json2table name gender age' <<-EOF
+┌───────────────┬──────┬───────┐
+│name           │gender│age    │
+├───────────────┼──────┼───────┤
+│Madame Uppercut│female│39     │
+│Eternal Flame  │female│1000000│
+└───────────────┴──────┴───────┘
+EOF
+          matches_expected 'filter="age>39" json2table name gender age' <<-EOF
+┌─────────────┬──────┬───────┐
+│name         │gender│age    │
+├─────────────┼──────┼───────┤
+│Eternal Flame│female│1000000│
+└─────────────┴──────┴───────┘
+EOF
+          matches_expected 'filter="age!39" json2table name gender age' <<-EOF
+┌─────────────┬──────┬───────┐
+│name         │gender│age    │
+├─────────────┼──────┼───────┤
+│Molecule Man │male  │29     │
+│Eternal Flame│female│1000000│
+└─────────────┴──────┴───────┘
+EOF
+          matches_expected 'filter="age!=39" json2table name gender age' <<-EOF
+┌─────────────┬──────┬───────┐
+│name         │gender│age    │
+├─────────────┼──────┼───────┤
+│Molecule Man │male  │29     │
+│Eternal Flame│female│1000000│
+└─────────────┴──────┴───────┘
+EOF
+          matches_expected 'filter="age<>39" json2table name gender age' <<-EOF
+┌─────────────┬──────┬───────┐
+│name         │gender│age    │
+├─────────────┼──────┼───────┤
+│Molecule Man │male  │29     │
+│Eternal Flame│female│1000000│
+└─────────────┴──────┴───────┘
+EOF
+        end_
+      end_
+    end_
+
     describe 'multi-line data'
       # shellcheck disable=SC2317
       input_cmd() { jq --compact-output '.members[] | .powers |= join("\n")'; }

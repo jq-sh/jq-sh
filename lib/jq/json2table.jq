@@ -302,7 +302,7 @@ def filter_json(x):
           # It is largely compatible with Perl v5.8 regexes.
           # Pretend that jq has a regex type if the string is surrounded by slashes followed by flags
           ($value | capture(regex_regex)) as { regex: $regex, flags: $flags } |
-          map(select(.[$name]|test($regex; $flags)))
+          map(select(.[$name] // "" | test($regex; $flags)))
         elif $operator ==    "<"  then
           map(select(.[$name] <  $value))
         elif $operator ==    "<=" then

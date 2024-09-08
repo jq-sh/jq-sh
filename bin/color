@@ -30,7 +30,7 @@ next_color() {
 color() { pattern="${1:-}"
   # >&2 echo "COLOR=[$COLOR] pattern=[$pattern]"
   if [ $# -gt 0 ]; then
-    GREP_COLOR="${COLOR_EFFECTS}${COLOR}" grep -E --color=always --line-buffered "${pattern}|$" | {
+    GREP_COLOR="${COLOR_EFFECTS}${COLOR}" GREP_COLORS="mt=${COLOR_EFFECTS}${COLOR}" grep -E --color=always --line-buffered "${pattern}|$" | {
       shift
       COLOR="$(next_color "$COLOR" || echo "$MIN_COLOR")" color "$@"
     }

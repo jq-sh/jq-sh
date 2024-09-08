@@ -6,8 +6,8 @@ arg_int     formed     "${formed:-2016}"
 arg         homeTown   "${homeTown:-Metro City}"
 arg         secretBase "${secretBase:-Super tower}"
 arg_jsonl   members     $(
-  for args in "${@:-}"; do
-    eval member.jsont $args
+  for member_args in "$@"; do
+    eval "member.jsont $member_args"
   done
 )
 

@@ -7,7 +7,7 @@ arg       resource     $resource
 arg       missing_key  ${missing_key:-¿}
 arg_int   max_width    ${max_width:-${COLUMNS:-0}}
 
-arg_array cols         ${cols:-$*}
+arg       cols         "${cols}"
 
 
 __JQ__

@@ -40,7 +40,7 @@ matches_expected_with_colors() {
 
 xmatches_expected() { local cmd="${cmd:-$1}"
   describe '`'"${cmd:-echo}"'`'
-    it 
+    it
       iecho "[33;1mpending[0m"
     end_
   end_

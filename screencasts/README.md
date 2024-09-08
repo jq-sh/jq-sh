@@ -3,7 +3,7 @@
 [![color.cast](color.gif)](https://asciinema.org/a/0jmWyHoWDHAMqrnskzZ352tpl)
 
 ## json2table
-[![json2table.cast](json2table.gif)](https://asciinema.org/a/ac3bfAn6VARAap0v1QYOprnpr)
+[![json2table.cast](json2table.gif)](https://asciinema.org/a/LdZYPDVvf0YGpymCefiz1oiHA)
 
 ## jsonl2tsv
 [![jsonl2tsv.cast](jsonl2tsv.gif)](https://asciinema.org/a/MW1WVgHQACU9RGcqs4M4NHeii)

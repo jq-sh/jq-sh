@@ -1,6 +1,29 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# color palette
+COLOR_ERROR=${COLOR_ERROR:-31}; level_error=0
+COLOR_WARN=${COLOR_WARN:-44}  ;  level_warn=1
+COLOR_INFO=${COLOR_INFO:-34}  ;  level_info=2
+COLOR_CMD=${COLOR_CMD:-1}     ;   level_cmd=3
+COLOR_DEBUG=${COLOR_DEBUG:-2} ; level_debug=4
+
+COLOR_PALETTE="${COLOR_PALETTE:-$COLOR_ERROR $COLOR_WARN $COLOR_INFO $COLOR_CMD $COLOR_DEBUG}"
+read -r -a colors <<< "$COLOR_PALETTE"
+
+log_level() {
+  if   ${QUIET:-false}; then
+    echo $level_warn
+  elif ${SHOW_CMD:-false} || ${VERBOSE:-false}; then
+    echo $level_cmd
+  elif ${DEBUG:-false}; then
+    echo $level_debug
+  else
+    echo $level_info
+  fi
+}
+LOG_LEVEL=${LOG_LEVEL:-$(log_level)}
+
 markdown_highlighter() {
   if command -v bat > /dev/null 2>&1; then
     echo "bat --color=always --style=${BAT_STYLE:-plain} --language=markdown"
@@ -13,11 +36,14 @@ timestamp() {
   date -u +"${DATE_FORMAT:-%Y-%m-%dT%H:%M:%SZ}"
 }
 
-info() {
-  color="${color:-34}"
+println() {
   ifs0="$IFS"; IFS=""
   while read -r line; do
-    >&2 echo -e "$(${return_cursor:-false} && printf "\r")[$(timestamp)] [${color}m${line}[0m"
+    # shellcheck disable=SC2154
+    for word in ${redact:-}; do
+      line="${line/${word}/█████}"
+    done
+    >&2 echo -e "$(${return_cursor:-false} && printf "\r")[$(timestamp)] [${color:-${colors[level_info]}}m${line}[0m"
   done < <(echo -e "$@")
   IFS="$ifs0"
 }
@@ -26,27 +52,37 @@ info_r() {
   return_cursor=true info "$@"
 }
 
+info() {
+  if [[ LOG_LEVEL -ge level_info ]]; then
+    color="${color:-${colors[level_info]}}" println "$@"
+  fi
+}
+
 warn() {
-  color="${color:-44}" info "$@"
+  if ${WARN:-false} || [[ LOG_LEVEL -ge level_warn ]]; then
+    color="${color:-${colors[level_warn]}}" println "$@"
+  fi
 }
 
 debug() {
-  if ${VERBOSE:-false}; then
-    info "$@"
+  if ${DEBUG:-false} || [[ LOG_LEVEL -ge level_debug ]]; then
+    color=${color:-${colors[level_debug]}} println "$@"
   fi
+}
+
+error() {
+  color=${color:-${colors[level_error]}} println "$@"
+  ${without_help:-true} && exit $WITHOUT_HELP || exit "${EXIT_CODE:-1}"
 }
 
 print() {
   >&2 printf '%s' "$@"
 }
 
-error() {
-  color=31 info "$@"
-  ${without_help:-true} && exit $WITHOUT_HELP || exit 1
-}
-
 eval_cmd() {
-  color=1 debug "$@"
+  if ${SHOW_CMD:-true} || [[ LOG_LEVEL -ge level_cmd ]]; then
+    color="${color:-${colors[level_cmd]}}" info "$@"
+  fi
   eval "$*"
 }
 

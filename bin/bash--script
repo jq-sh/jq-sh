@@ -81,11 +81,15 @@ print() {
   >&2 printf '%s' "$@"
 }
 
+strip_color() {
+  sed -E "s/"$'\E'"\[([0-9]{1,3}((;[0-9]{1,3})*)?)?[m|K]//g"
+}
+
 eval_cmd() {
   if ${SHOW_CMD:-true} || [[ LOG_LEVEL -ge level_cmd ]]; then
     color="${color:-${colors[level_cmd]}}" info "$@"
   fi
-  eval "$*"
+  eval "$(strip_color <<< "$*")"
 }
 
 cmd() {

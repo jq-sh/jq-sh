@@ -38,12 +38,14 @@ timestamp() {
 
 println() {
   ifs0="$IFS"; IFS=""
+  i=0
   while read -r line; do
+    (( i++ ))
     # shellcheck disable=SC2154
     for word in ${redact:-}; do
       line="${line/${word}/█████}"
     done
-    >&2 echo -e "$(${return_cursor:-false} && printf "\r")[$(timestamp)] [${color:-${colors[level_info]}}m${line}[0m"
+    >&2 echo -e "$(${return_cursor:-false} && printf "\r")$(if [ $i -eq 1 ]; then echo "[$(timestamp)] "; else : ; fi)[${color:-${colors[level_info]}}m${line}[0m"
   done < <(echo -e "$@")
   IFS="$ifs0"
 }

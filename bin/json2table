@@ -18,7 +18,18 @@ resource="${resource:-${_resource%.table}}"
 # Nb. `eval echo "$cols"` allows x.{y1,y2} expansion
 # COLS=$(eval echo "${cols:-${@:-}}")
 
-COLS="${cols:-${@:-}}"
+args="${*:-}"
+
+shopt -s extglob
+case $args in
+  *[=!\>\<]**) sort_by="${sort_by:-} $args" ;;
+  *          ) cols="${cols:-$args}"       ;;
+esac
+# info "args=[${args:-}]"
+# info "cols=[${cols:-}]"
+# info "sort_by=[${sort_by:-}]"
+
+COLS="${cols:-}"
 SORT_BY=${sort_by:-}
 MISSING_KEY=${MISSING_KEY:-¿}
 TITLE=${title:-}
@@ -81,7 +92,7 @@ title_for() { local resource="${1:-}"
 
 term() {
   for term in "$@"; do
-    [[ -n "$term" ]] && echo "\<$term\>"
+    [[ -n "$term" ]] && echo "\b$term\b"
   done
 }
 
@@ -198,22 +209,24 @@ tables() {
 }
 
 
+if [[ -n "${sort_by:-}" ]]; then
+  debug sort_by="'${sort_by[*]:-}'"
+fi
+
 if [[ -n "${resources:-}" ]]; then
   # shellcheck disable=SC2086
-  tables $resources
+  sort_by="${sort_by:-}" cols="${cols:-}" tables $resources
 else
   if [[ -f "${table_script:-}" ]]; then
     jq-sh "$table_script"
   else
     cat
   fi |
-    # Nb. this is a jqsh script, but we can't do the jq in the
-    # main jqsh script because...
-    resource="$resource" json_objects_array                          |
-    sort_by="${sort_by[*]:-}" cols="${cols[*]}" resource="$resource" title="$title" json2table.jqsh |
-
-    # TODO - reimplement the `color` in jq code,
-    # so we don't have to pop back out to bash
-    color "${color_terms_a[@]}"                                      |
-    color_missing
+    # color_terms_a="$(IFS=$'\n'; echo "${color_terms_a[*]}")" \
+    color_terms=$( IFS=$'\n'; echo "${color_terms_a[*]}" ) \
+    sort_by="${sort_by[*]:-}"      \
+    cols="${cols[*]:-}"            \
+    resource="$resource"           \
+    title="$title"                 \
+    json2table.jqsh
 fi

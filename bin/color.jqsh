@@ -1,0 +1,11 @@
+#!/usr/bin/env jq-sh
+
+opts --raw-input --raw-output
+
+arg_array args "$@"
+
+__JQ__
+
+include "color";
+
+color($args)

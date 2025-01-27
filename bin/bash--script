@@ -38,12 +38,14 @@ timestamp() {
 
 println() {
   ifs0="$IFS"; IFS=""
+  i=0
   while read -r line; do
+    (( i++ ))
     # shellcheck disable=SC2154
     for word in ${redact:-}; do
       line="${line/${word}/█████}"
     done
-    >&2 echo -e "$(${return_cursor:-false} && printf "\r")[$(timestamp)] [${color:-${colors[level_info]}}m${line}[0m"
+    >&2 echo -e "$(${return_cursor:-false} && printf "\r")$(if [ $i -eq 1 ]; then echo "[$(timestamp)] "; else : ; fi)[${color:-${colors[level_info]}}m${line}[0m"
   done < <(echo -e "$@")
   IFS="$ifs0"
 }
@@ -79,11 +81,15 @@ print() {
   >&2 printf '%s' "$@"
 }
 
+strip_color() {
+  sed -E "s/"$'\E'"\[([0-9]{1,3}((;[0-9]{1,3})*)?)?[m|K]//g"
+}
+
 eval_cmd() {
   if ${SHOW_CMD:-true} || [[ LOG_LEVEL -ge level_cmd ]]; then
     color="${color:-${colors[level_cmd]}}" info "$@"
   fi
-  eval "$*"
+  eval "$(strip_color <<< "$*")"
 }
 
 cmd() {

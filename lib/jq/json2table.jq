@@ -1,3 +1,5 @@
+include "color";
+
 def dig_keys:
   . as $obj |
   reduce (keys[]) as $k ([];
@@ -378,7 +380,7 @@ def json_objects_array:
     if type == "array" then
     .
   elif has($resource) then
-    .[$resource]
+    [.[$resource]] | flatten
   elif has("\($resource)s") then
     .["\($resource)s"]
   else
@@ -400,6 +402,6 @@ def table:
   [$headings, data_rows($keys)]           |
   truncate_rows($truncations; $end_sizes) |
   shrink_rows                             |
-
-  render_table
+  render_table                            |
+  color(env.color_terms | split("\n"))
 ;

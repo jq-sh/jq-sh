@@ -254,8 +254,8 @@ EOF
 EOF
           )
           describe 'args'
-            matches_expected 'json2table name                    gender  ">age<=39"' <<< "$expected"
-            matches_expected 'json2table "name=/e[ ] (u|m)/ix"   gender  ">age"    ' <<< "$expected"
+            matches_expected '               cols="name gender  age" json2table ">age<=39"           ' <<< "$expected"
+            matches_expected '               cols="name gender >age" json2table "name=/e[ ] (u|m)/ix"' <<< "$expected"
           end_
           describe 'cols'
             matches_expected 'sort_by=">age" cols=" name                gender  age<=39" json2table' <<< "$expected"
@@ -265,11 +265,11 @@ EOF
             matches_expected '               cols="<name=/e[ ] (u|m)/ix gender  age"     json2table' <<< "$expected"
           end_
           describe 'sort_by'
-            matches_expected 'sort_by="        >age<=39" json2table  name                 gender   age'      <<< "$expected"
-            matches_expected 'sort_by="        >age"     json2table  name                 gender  "age<=39"' <<< "$expected"
-            matches_expected 'sort_by="<gender <age"     json2table  name                 gender  "age<=39"' <<< "$expected"
-            matches_expected 'sort_by="gender age"       json2table  name                 gender  "age<=39"' <<< "$expected"
-            matches_expected 'sort_by="gender age"       json2table "name=/e[ ] (u|m)/ix" gender   age'      <<< "$expected"
+            matches_expected 'sort_by="        >age<=39"                                       json2table name gender age' <<< "$expected"
+            matches_expected 'sort_by="        >age    " cols="name gender age<=39"            json2table                ' <<< "$expected"
+            matches_expected 'sort_by="<gender <age    " cols="name gender age<=39"            json2table                ' <<< "$expected"
+            matches_expected 'sort_by="gender   age    " cols="name gender age<=39"            json2table                ' <<< "$expected"
+            matches_expected 'sort_by="gender   age    " cols="name=/e[ ] (u|m)/ix gender age" json2table                ' <<< "$expected"
           end_
         end_
 
@@ -641,69 +641,69 @@ EOF
     describe 'color_terms'
       input_cmd() { jq --compact-output '.members[]'; }
 
-      matches_expected_with_colors 'color_terms="$(cat shpecs/support/color_terms-full.txt)" super_hero_member.table' <<-EOF
+      STRIP_COLOR=false matches_expected 'color_terms="$(cat shpecs/support/color_terms-full.txt)" super_hero_member.table' <<-EOF
 [1mSuper Heroes[0m
 ┌───────────────┬───────────────┬───────────────────────────────────────────────────────────────────────────┬───────┐
 │[1mname           [0m│[1m:secretIdentity[0m│[1mpowers                                                                     [0m│[1mage    [0m│
 ├───────────────┼───────────────┼───────────────────────────────────────────────────────────────────────────┼───────┤
 │Eternal Flame  │Unknown        │Immortality, Heat Immunity, Inferno, Teleportation, Interdimensional travel│1000000│
-│Madame Uppercut│[1;36m[KJane Wilson[m[K    │Million tonne punch, Damage resistance, Superhuman reflexes                │39     │
-│Molecule Man   │Dan Jukes      │Radiation resistance, [1;35m[KTurning tiny[m[K, Radiation [1;34m[Kblast[m[K                        │29     │
+│Madame Uppercut│[1;36mJane Wilson[0m    │Million tonne punch, Damage resistance, Superhuman reflexes                │39     │
+│Molecule Man   │Dan Jukes      │Radiation resistance, [1;35mTurning tiny[0m, Radiation [1;34mblast[0m                        │29     │
 └───────────────┴───────────────┴───────────────────────────────────────────────────────────────────────────┴───────┘
 EOF
 
-      matches_expected_with_colors 'color_terms="$(cat shpecs/support/color_terms-partial.txt)" super_hero_member.table' <<-EOF
+      STRIP_COLOR=false matches_expected 'color_terms="$(cat shpecs/support/color_terms-partial.txt)" super_hero_member.table' <<-EOF
 [1mSuper Heroes[0m
 ┌───────────────┬───────────────┬───────────────────────────────────────────────────────────────────────────┬───────┐
 │[1mname           [0m│[1m:secretIdentity[0m│[1mpowers                                                                     [0m│[1mage    [0m│
 ├───────────────┼───────────────┼───────────────────────────────────────────────────────────────────────────┼───────┤
 │Eternal Flame  │Unknown        │Immortality, Heat Immunity, Inferno, Teleportation, Interdimensional travel│1000000│
-│Madame Uppercut│[1;36m[KJane Wilson[m[K    │Million tonne punch, Damage resistance, Superhuman reflexes                │39     │
-│Molecule Man   │Dan Jukes      │Radiation resistance, Turning tiny, Radiation [1;34m[Kblast[m[K                        │29     │
+│Madame Uppercut│[1;36mJane Wilson[0m    │Million tonne punch, Damage resistance, Superhuman reflexes                │39     │
+│Molecule Man   │Dan Jukes      │Radiation resistance, Turning tiny, Radiation [1;34mblast[0m                        │29     │
 └───────────────┴───────────────┴───────────────────────────────────────────────────────────────────────────┴───────┘
 EOF
 
-      matches_expected_with_colors 'super_hero_member_color_terms="$(cat shpecs/support/color_terms-full.txt)" super_hero_member.table' <<-EOF
+      STRIP_COLOR=false matches_expected 'super_hero_member_color_terms="$(cat shpecs/support/color_terms-full.txt)" super_hero_member.table' <<-EOF
 [1mSuper Heroes[0m
 ┌───────────────┬───────────────┬───────────────────────────────────────────────────────────────────────────┬───────┐
 │[1mname           [0m│[1m:secretIdentity[0m│[1mpowers                                                                     [0m│[1mage    [0m│
 ├───────────────┼───────────────┼───────────────────────────────────────────────────────────────────────────┼───────┤
 │Eternal Flame  │Unknown        │Immortality, Heat Immunity, Inferno, Teleportation, Interdimensional travel│1000000│
-│Madame Uppercut│[1;36m[KJane Wilson[m[K    │Million tonne punch, Damage resistance, Superhuman reflexes                │39     │
-│Molecule Man   │Dan Jukes      │Radiation resistance, [1;35m[KTurning tiny[m[K, Radiation [1;34m[Kblast[m[K                        │29     │
+│Madame Uppercut│[1;36mJane Wilson[0m    │Million tonne punch, Damage resistance, Superhuman reflexes                │39     │
+│Molecule Man   │Dan Jukes      │Radiation resistance, [1;35mTurning tiny[0m, Radiation [1;34mblast[0m                        │29     │
 └───────────────┴───────────────┴───────────────────────────────────────────────────────────────────────────┴───────┘
 EOF
 
-      matches_expected_with_colors 'super_hero_member_color_terms="$(cat shpecs/support/color_terms-partial.txt)" super_hero_member.table' <<-EOF
+      STRIP_COLOR=false matches_expected 'super_hero_member_color_terms="$(cat shpecs/support/color_terms-partial.txt)" super_hero_member.table' <<-EOF
 [1mSuper Heroes[0m
 ┌───────────────┬───────────────┬───────────────────────────────────────────────────────────────────────────┬───────┐
 │[1mname           [0m│[1m:secretIdentity[0m│[1mpowers                                                                     [0m│[1mage    [0m│
 ├───────────────┼───────────────┼───────────────────────────────────────────────────────────────────────────┼───────┤
 │Eternal Flame  │Unknown        │Immortality, Heat Immunity, Inferno, Teleportation, Interdimensional travel│1000000│
-│Madame Uppercut│[1;36m[KJane Wilson[m[K    │Million tonne punch, Damage resistance, Superhuman reflexes                │39     │
-│Molecule Man   │Dan Jukes      │Radiation resistance, Turning tiny, Radiation [1;34m[Kblast[m[K                        │29     │
+│Madame Uppercut│[1;36mJane Wilson[0m    │Million tonne punch, Damage resistance, Superhuman reflexes                │39     │
+│Molecule Man   │Dan Jukes      │Radiation resistance, Turning tiny, Radiation [1;34mblast[0m                        │29     │
 └───────────────┴───────────────┴───────────────────────────────────────────────────────────────────────────┴───────┘
 EOF
 
-      matches_expected_with_colors 'conf=shpecs/support/specific.conf super_hero_member.table' <<-EOF
+      STRIP_COLOR=false matches_expected 'conf=shpecs/support/specific.conf super_hero_member.table' <<-EOF
 [1mSuper Specific Heroes[0m
 ┌───────────────────────────────────────────────────────────────────────────┬───┬──────┐
 │[1mpowers                                                                     [0m│[1mfoo[0m│[1mgender[0m│
 ├───────────────────────────────────────────────────────────────────────────┼───┼──────┤
-│Million tonne punch, [1;34m[KDamage resistance[m[K, [1;35m[KSuperhuman[m[K reflexes                │[1;41m[K¿[m[K  │female│
-│Immortality, [1;41m[KHeat[m[K [1;42m[KImmunity[m[K, Inferno, Teleportation, Interdimensional travel│[1;41m[K¿[m[K  │female│
-│Radiation resistance, Turning tiny, Radiation blast                        │[1;41m[K¿[m[K  │male  │
+│Million tonne punch, [1;34mDamage resistance[0m, [1;35mSuperhuman[0m reflexes                │¿  │female│
+│Immortality, [1;41mHeat[0m [1;42mImmunity[0m, Inferno, Teleportation, Interdimensional travel│¿  │female│
+│Radiation resistance, Turning tiny, Radiation blast                        │¿  │male  │
 └───────────────────────────────────────────────────────────────────────────┴───┴──────┘
 EOF
 
-      matches_expected_with_colors 'conf=shpecs/support/shared.conf super_hero_member.table' <<-EOF
+      STRIP_COLOR=false matches_expected 'conf=shpecs/support/shared.conf super_hero_member.table' <<-EOF
 [1mSuper Heroes[0m
 ┌───────────────────────────────────────────────────────────────────────────┬───┬──────┐
 │[1mpowers                                                                     [0m│[1mbar[0m│[1mgender[0m│
 ├───────────────────────────────────────────────────────────────────────────┼───┼──────┤
-│Million tonne punch, [1;42m[KDamage resistance[m[K, [1;36m[KSuperhuman[m[K reflexes                │[1;41m[K¿[m[K  │female│
-│Immortality, [1;34m[KHeat[m[K [1;35m[KImmunity[m[K, Inferno, Teleportation, Interdimensional travel│[1;41m[K¿[m[K  │female│
-│Radiation resistance, Turning tiny, Radiation blast                        │[1;41m[K¿[m[K  │male  │
+│Million tonne punch, [1;42mDamage resistance[0m, [1;36mSuperhuman[0m reflexes                │¿  │female│
+│Immortality, [1;34mHeat[0m [1;35mImmunity[0m, Inferno, Teleportation, Interdimensional travel│¿  │female│
+│Radiation resistance, Turning tiny, Radiation blast                        │¿  │male  │
 └───────────────────────────────────────────────────────────────────────────┴───┴──────┘
 EOF
     end_
@@ -711,69 +711,69 @@ EOF
     describe 'color_terms_add'
       input_cmd() { jq --compact-output '.members[]'; }
 
-      matches_expected_with_colors 'conf=shpecs/support/specific-add.conf super_hero_member.table' <<-EOF
+      STRIP_COLOR=false matches_expected 'conf=shpecs/support/specific-add.conf super_hero_member.table' <<-EOF
 [1mSuper Heroes[0m
 ┌───────────────┬───────────────┬───────────────────────────────────────────────────────────────────────────┬───────┬───┬──────┐
 │[1mname           [0m│[1m:secretIdentity[0m│[1mpowers                                                                     [0m│[1mage    [0m│[1mfoo[0m│[1mgender[0m│
 ├───────────────┼───────────────┼───────────────────────────────────────────────────────────────────────────┼───────┼───┼──────┤
-│[1;34m[KEternal[m[K Flame  │Unknown        │Immortality, Heat Immunity, Inferno, Teleportation, [1;45m[KInterdimensional travel[m[K│1000000│[1;41m[K¿[m[K  │[1;44m[Kfemale[m[K│
-│[1;36m[KMadame[m[K [1;41m[KUppercut[m[K│Jane Wilson    │Million tonne punch, Damage resistance, Superhuman reflexes                │39     │[1;41m[K¿[m[K  │[1;44m[Kfemale[m[K│
-│Molecule [1;43m[KMan[m[K   │[1;42m[KDan Jukes[m[K      │Radiation resistance, Turning tiny, Radiation blast                        │29     │[1;41m[K¿[m[K  │[1;43m[Kmale[m[K  │
+│[1;34mEternal[0m Flame  │Unknown        │Immortality, Heat Immunity, Inferno, Teleportation, [1;45mInterdimensional travel[0m│1000000│¿  │[1;44mfemale[0m│
+│[1;36mMadame[0m [1;41mUppercut[0m│Jane Wilson    │Million tonne punch, Damage resistance, Superhuman reflexes                │39     │¿  │[1;44mfemale[0m│
+│Molecule [1;43mMan[0m   │[1;42mDan Jukes[0m      │Radiation resistance, Turning tiny, Radiation blast                        │29     │¿  │[1;43mmale[0m  │
 └───────────────┴───────────────┴───────────────────────────────────────────────────────────────────────────┴───────┴───┴──────┘
 EOF
 
-      matches_expected_with_colors 'conf=shpecs/support/shared-add.conf super_hero_member.table' <<-EOF
+      STRIP_COLOR=false matches_expected 'conf=shpecs/support/shared-add.conf super_hero_member.table' <<-EOF
 [1mSuper Shared Heroes[0m
 ┌───────────────┬───────────────┬───────────────────────────────────────────────────────────────────────────┬───────┬───┬──────┐
 │[1mname           [0m│[1m:secretIdentity[0m│[1mpowers                                                                     [0m│[1mage    [0m│[1mbar[0m│[1mgender[0m│
 ├───────────────┼───────────────┼───────────────────────────────────────────────────────────────────────────┼───────┼───┼──────┤
-│[1;36m[KMadame[m[K [1;41m[KUppercut[m[K│Jane Wilson    │Million tonne punch, Damage resistance, Superhuman reflexes                │39     │[1;41m[K¿[m[K  │[1;43m[Kfemale[m[K│
-│[1;34m[KEternal[m[K Flame  │Unknown        │Immortality, Heat Immunity, Inferno, Teleportation, [1;45m[KInterdimensional travel[m[K│1000000│[1;41m[K¿[m[K  │[1;43m[Kfemale[m[K│
-│Molecule [1;44m[KMan[m[K   │[1;42m[KDan Jukes[m[K      │Radiation resistance, Turning tiny, Radiation blast                        │29     │[1;41m[K¿[m[K  │[1;44m[Kmale[m[K  │
+│[1;36mMadame[0m [1;41mUppercut[0m│Jane Wilson    │Million tonne punch, Damage resistance, Superhuman reflexes                │39     │¿  │[1;43mfemale[0m│
+│[1;34mEternal[0m Flame  │Unknown        │Immortality, Heat Immunity, Inferno, Teleportation, [1;45mInterdimensional travel[0m│1000000│¿  │[1;43mfemale[0m│
+│Molecule [1;44mMan[0m   │[1;42mDan Jukes[0m      │Radiation resistance, Turning tiny, Radiation blast                        │29     │¿  │[1;44mmale[0m  │
 └───────────────┴───────────────┴───────────────────────────────────────────────────────────────────────────┴───────┴───┴──────┘
 EOF
 
-      matches_expected_with_colors 'color_terms_add="$(cat shpecs/support/color_terms-full.txt)" super_hero_member.table' <<-EOF
+      STRIP_COLOR=false matches_expected 'color_terms_add="$(cat shpecs/support/color_terms-full.txt)" super_hero_member.table' <<-EOF
 [1mSuper Heroes[0m
 ┌───────────────┬───────────────┬───────────────────────────────────────────────────────────────────────────┬───────┐
 │[1mname           [0m│[1m:secretIdentity[0m│[1mpowers                                                                     [0m│[1mage    [0m│
 ├───────────────┼───────────────┼───────────────────────────────────────────────────────────────────────────┼───────┤
-│[1;34m[KEternal[m[K Flame  │Unknown        │Immortality, Heat Immunity, Inferno, Teleportation, Interdimensional travel│1000000│
-│[1;36m[KMadame[m[K [1;41m[KUppercut[m[K│[1;45m[KJane Wilson[m[K    │Million tonne punch, Damage resistance, Superhuman reflexes                │39     │
-│Molecule Man   │[1;42m[KDan Jukes[m[K      │Radiation resistance, [1;44m[KTurning tiny[m[K, Radiation [1;43m[Kblast[m[K                        │29     │
+│[1;34mEternal[0m Flame  │Unknown        │Immortality, Heat Immunity, Inferno, Teleportation, Interdimensional travel│1000000│
+│[1;36mMadame[0m [1;41mUppercut[0m│[1;45mJane Wilson[0m    │Million tonne punch, Damage resistance, Superhuman reflexes                │39     │
+│Molecule Man   │[1;42mDan Jukes[0m      │Radiation resistance, [1;44mTurning tiny[0m, Radiation [1;43mblast[0m                        │29     │
 └───────────────┴───────────────┴───────────────────────────────────────────────────────────────────────────┴───────┘
 EOF
 
-      matches_expected_with_colors 'color_terms_add="$(cat shpecs/support/color_terms-partial.txt)" super_hero_member.table' <<-EOF
+      STRIP_COLOR=false matches_expected 'color_terms_add="$(cat shpecs/support/color_terms-partial.txt)" super_hero_member.table' <<-EOF
 [1mSuper Heroes[0m
 ┌───────────────┬───────────────┬───────────────────────────────────────────────────────────────────────────┬───────┐
 │[1mname           [0m│[1m:secretIdentity[0m│[1mpowers                                                                     [0m│[1mage    [0m│
 ├───────────────┼───────────────┼───────────────────────────────────────────────────────────────────────────┼───────┤
-│[1;34m[KEternal[m[K Flame  │Unknown        │Immortality, Heat Immunity, Inferno, Teleportation, Interdimensional travel│1000000│
-│[1;36m[KMadame[m[K [1;41m[KUppercut[m[K│[1;45m[KJane Wilson[m[K    │Million tonne punch, Damage resistance, Superhuman reflexes                │39     │
-│Molecule Man   │[1;42m[KDan Jukes[m[K      │Radiation resistance, Turning tiny, Radiation [1;43m[Kblast[m[K                        │29     │
+│[1;34mEternal[0m Flame  │Unknown        │Immortality, Heat Immunity, Inferno, Teleportation, Interdimensional travel│1000000│
+│[1;36mMadame[0m [1;41mUppercut[0m│[1;45mJane Wilson[0m    │Million tonne punch, Damage resistance, Superhuman reflexes                │39     │
+│Molecule Man   │[1;42mDan Jukes[0m      │Radiation resistance, Turning tiny, Radiation [1;43mblast[0m                        │29     │
 └───────────────┴───────────────┴───────────────────────────────────────────────────────────────────────────┴───────┘
 EOF
 
-      matches_expected_with_colors 'super_hero_member_color_terms_add="$(cat shpecs/support/color_terms-full.txt)" super_hero_member.table' <<-EOF
+      STRIP_COLOR=false matches_expected 'super_hero_member_color_terms_add="$(cat shpecs/support/color_terms-full.txt)" super_hero_member.table' <<-EOF
 [1mSuper Heroes[0m
 ┌───────────────┬───────────────┬───────────────────────────────────────────────────────────────────────────┬───────┐
 │[1mname           [0m│[1m:secretIdentity[0m│[1mpowers                                                                     [0m│[1mage    [0m│
 ├───────────────┼───────────────┼───────────────────────────────────────────────────────────────────────────┼───────┤
-│[1;34m[KEternal[m[K Flame  │Unknown        │Immortality, Heat Immunity, Inferno, Teleportation, Interdimensional travel│1000000│
-│[1;36m[KMadame[m[K [1;41m[KUppercut[m[K│[1;45m[KJane Wilson[m[K    │Million tonne punch, Damage resistance, Superhuman reflexes                │39     │
-│Molecule Man   │[1;42m[KDan Jukes[m[K      │Radiation resistance, [1;44m[KTurning tiny[m[K, Radiation [1;43m[Kblast[m[K                        │29     │
+│[1;34mEternal[0m Flame  │Unknown        │Immortality, Heat Immunity, Inferno, Teleportation, Interdimensional travel│1000000│
+│[1;36mMadame[0m [1;41mUppercut[0m│[1;45mJane Wilson[0m    │Million tonne punch, Damage resistance, Superhuman reflexes                │39     │
+│Molecule Man   │[1;42mDan Jukes[0m      │Radiation resistance, [1;44mTurning tiny[0m, Radiation [1;43mblast[0m                        │29     │
 └───────────────┴───────────────┴───────────────────────────────────────────────────────────────────────────┴───────┘
 EOF
 
-      matches_expected_with_colors 'super_hero_member_color_terms_add="$(cat shpecs/support/color_terms-partial.txt)" super_hero_member.table' <<-EOF
+      STRIP_COLOR=false matches_expected 'super_hero_member_color_terms_add="$(cat shpecs/support/color_terms-partial.txt)" super_hero_member.table' <<-EOF
 [1mSuper Heroes[0m
 ┌───────────────┬───────────────┬───────────────────────────────────────────────────────────────────────────┬───────┐
 │[1mname           [0m│[1m:secretIdentity[0m│[1mpowers                                                                     [0m│[1mage    [0m│
 ├───────────────┼───────────────┼───────────────────────────────────────────────────────────────────────────┼───────┤
-│[1;34m[KEternal[m[K Flame  │Unknown        │Immortality, Heat Immunity, Inferno, Teleportation, Interdimensional travel│1000000│
-│[1;36m[KMadame[m[K [1;41m[KUppercut[m[K│[1;45m[KJane Wilson[m[K    │Million tonne punch, Damage resistance, Superhuman reflexes                │39     │
-│Molecule Man   │[1;42m[KDan Jukes[m[K      │Radiation resistance, Turning tiny, Radiation [1;43m[Kblast[m[K                        │29     │
+│[1;34mEternal[0m Flame  │Unknown        │Immortality, Heat Immunity, Inferno, Teleportation, Interdimensional travel│1000000│
+│[1;36mMadame[0m [1;41mUppercut[0m│[1;45mJane Wilson[0m    │Million tonne punch, Damage resistance, Superhuman reflexes                │39     │
+│Molecule Man   │[1;42mDan Jukes[0m      │Radiation resistance, Turning tiny, Radiation [1;43mblast[0m                        │29     │
 └───────────────┴───────────────┴───────────────────────────────────────────────────────────────────────────┴───────┘
 EOF
     end_

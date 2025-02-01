@@ -2,12 +2,14 @@
 
 opts --compact-output --raw-output
 
-arg       title        "${title}"
-arg       resource     $resource
-arg       missing_key  ${missing_key:-¿}
-arg_int   max_width    ${max_width:-${COLUMNS:-0}}
+arg         title         "${title}"
+arg         resource      $resource
+arg         missing_key   ${missing_key:-¿}
+arg_int     max_width     ${max_width:-${COLUMNS:-0}}
+arg_boolean find_all_cols ${find_all_cols:-true}
+arg_boolean sort_cols     ${sort_cols:-false}
 
-arg       cols         "${cols}"
+arg         cols          "${cols}"
 
 
 __JQ__

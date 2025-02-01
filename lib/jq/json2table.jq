@@ -2,7 +2,7 @@ include "color";
 
 def dig_keys:
   . as $obj |
-  reduce (keys[]) as $k ([];
+  reduce (keys_unsorted[]) as $k ([];
     . + (
       if ($obj[$k] | type == "object") then
         $obj[$k] | dig_keys | map("\($k).\(.)")
@@ -251,10 +251,25 @@ def scan_captures(regex; capture_count):
   ]
 ;
 
+def unique_unsorted:
+  # like unique, but doesn't sort the output
+  reduce .[] as $item ([]; if index($item) == null then . + [$item] else . end)
+;
+
+def find_cols:
+  if $find_all_cols then
+    # search through all cols to find all possible keys
+    map(select(. != null) | dig_keys) | add | unique_unsorted
+  else
+    # search through the first non null row to find all possible keys
+    map(select(. != null)) | first | dig_keys
+  end |
+  if $sort_cols then sort else . end
+;
+
 def cols:
   if $cols == "" then
-    # If no columns are specified then use all the keys
-    (.[0] | dig_keys | join(" "))
+    find_cols | join(" ")
   else
     $cols
   end

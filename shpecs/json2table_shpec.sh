@@ -13,13 +13,13 @@ describe "json2table"
     describe 'cols'
       describe 'all'
         matches_expected 'json2table' <<-EOF
-┌───────┬──────┬───────────────┬───────────────────────────────────────────────────────────────────────────────────┬───────────────┐
-│age    │gender│name           │powers                                                                             │secret.identity│
-├───────┼──────┼───────────────┼───────────────────────────────────────────────────────────────────────────────────┼───────────────┤
-│29     │male  │Molecule Man   │["Radiation resistance","Turning tiny","Radiation blast"]                          │Dan Jukes      │
-│39     │female│Madame Uppercut│["Million tonne punch","Damage resistance","Superhuman reflexes"]                  │Jane Wilson    │
-│1000000│female│Eternal Flame  │["Immortality","Heat Immunity","Inferno","Teleportation","Interdimensional travel"]│Unknown        │
-└───────┴──────┴───────────────┴───────────────────────────────────────────────────────────────────────────────────┴───────────────┘
+┌───────────────┬───────┬──────┬───────────────┬───────────────────────────────────────────────────────────────────────────────────┐
+│name           │age    │gender│secret.identity│powers                                                                             │
+├───────────────┼───────┼──────┼───────────────┼───────────────────────────────────────────────────────────────────────────────────┤
+│Molecule Man   │29     │male  │Dan Jukes      │["Radiation resistance","Turning tiny","Radiation blast"]                          │
+│Madame Uppercut│39     │female│Jane Wilson    │["Million tonne punch","Damage resistance","Superhuman reflexes"]                  │
+│Eternal Flame  │1000000│female│Unknown        │["Immortality","Heat Immunity","Inferno","Teleportation","Interdimensional travel"]│
+└───────────────┴───────┴──────┴───────────────┴───────────────────────────────────────────────────────────────────────────────────┘
 EOF
       end_
 
@@ -83,13 +83,13 @@ EOF
 
       describe 'using max_width'
         matches_expected 'max_width=80 json2table' <<-EOF
-┌───────┬──────┬───────────────┬──────────────────────────────┬───────────────┐
-│age    │gender│name           │powers                        │secret.identity│
-├───────┼──────┼───────────────┼──────────────────────────────┼───────────────┤
-│29     │male  │Molecule Man   │["Radiation resistance","..."]│Dan Jukes      │
-│39     │female│Madame Uppercut│["Million tonne punch","D..."]│Jane Wilson    │
-│1000000│female│Eternal Flame  │["Immortality","Heat Immu..."]│Unknown        │
-└───────┴──────┴───────────────┴──────────────────────────────┴───────────────┘
+┌───────────────┬───────┬──────┬───────────────┬──────────────────────────────┐
+│name           │age    │gender│secret.identity│powers                        │
+├───────────────┼───────┼──────┼───────────────┼──────────────────────────────┤
+│Molecule Man   │29     │male  │Dan Jukes      │["Radiation resistance","..."]│
+│Madame Uppercut│39     │female│Jane Wilson    │["Million tonne punch","D..."]│
+│Eternal Flame  │1000000│female│Unknown        │["Immortality","Heat Immu..."]│
+└───────────────┴───────┴──────┴───────────────┴──────────────────────────────┘
 EOF
         describe 'and truncation'
           matches_expected 'max_width=80 json2table age gender name%10 powers secret.identity' <<-EOF
@@ -193,53 +193,53 @@ EOF
       describe 'filtering'
         describe 'single filter'
           matches_expected 'sort_by="gender=female" json2table' <<-EOF
-┌───────┬──────┬───────────────┬───────────────────────────────────────────────────────────────────────────────────┬───────────────┐
-│age    │gender│name           │powers                                                                             │secret.identity│
-├───────┼──────┼───────────────┼───────────────────────────────────────────────────────────────────────────────────┼───────────────┤
-│39     │female│Madame Uppercut│["Million tonne punch","Damage resistance","Superhuman reflexes"]                  │Jane Wilson    │
-│1000000│female│Eternal Flame  │["Immortality","Heat Immunity","Inferno","Teleportation","Interdimensional travel"]│Unknown        │
-└───────┴──────┴───────────────┴───────────────────────────────────────────────────────────────────────────────────┴───────────────┘
+┌───────────────┬───────┬──────┬───────────────┬───────────────────────────────────────────────────────────────────────────────────┐
+│name           │age    │gender│secret.identity│powers                                                                             │
+├───────────────┼───────┼──────┼───────────────┼───────────────────────────────────────────────────────────────────────────────────┤
+│Madame Uppercut│39     │female│Jane Wilson    │["Million tonne punch","Damage resistance","Superhuman reflexes"]                  │
+│Eternal Flame  │1000000│female│Unknown        │["Immortality","Heat Immunity","Inferno","Teleportation","Interdimensional travel"]│
+└───────────────┴───────┴──────┴───────────────┴───────────────────────────────────────────────────────────────────────────────────┘
 EOF
         end_
 
         describe 'regex filter'
           matches_expected 'sort_by=">name=/(Ma.*?m|man)/ix" json2table' <<-EOF
-┌───┬──────┬───────────────┬─────────────────────────────────────────────────────────────────┬───────────────┐
-│age│gender│name           │powers                                                           │secret.identity│
-├───┼──────┼───────────────┼─────────────────────────────────────────────────────────────────┼───────────────┤
-│29 │male  │Molecule Man   │["Radiation resistance","Turning tiny","Radiation blast"]        │Dan Jukes      │
-│39 │female│Madame Uppercut│["Million tonne punch","Damage resistance","Superhuman reflexes"]│Jane Wilson    │
-└───┴──────┴───────────────┴─────────────────────────────────────────────────────────────────┴───────────────┘
+┌───────────────┬───┬──────┬───────────────┬─────────────────────────────────────────────────────────────────┐
+│name           │age│gender│secret.identity│powers                                                           │
+├───────────────┼───┼──────┼───────────────┼─────────────────────────────────────────────────────────────────┤
+│Molecule Man   │29 │male  │Dan Jukes      │["Radiation resistance","Turning tiny","Radiation blast"]        │
+│Madame Uppercut│39 │female│Jane Wilson    │["Million tonne punch","Damage resistance","Superhuman reflexes"]│
+└───────────────┴───┴──────┴───────────────┴─────────────────────────────────────────────────────────────────┘
 EOF
           describe 'with whitespace'
             matches_expected 'sort_by="name=\"/(Ma.*?m   |   man) # this regex also has ix flags to ignore case, comments & whitespace/ix\"" json2table' <<-EOF
-┌───┬──────┬───────────────┬─────────────────────────────────────────────────────────────────┬───────────────┐
-│age│gender│name           │powers                                                           │secret.identity│
-├───┼──────┼───────────────┼─────────────────────────────────────────────────────────────────┼───────────────┤
-│39 │female│Madame Uppercut│["Million tonne punch","Damage resistance","Superhuman reflexes"]│Jane Wilson    │
-│29 │male  │Molecule Man   │["Radiation resistance","Turning tiny","Radiation blast"]        │Dan Jukes      │
-└───┴──────┴───────────────┴─────────────────────────────────────────────────────────────────┴───────────────┘
+┌───────────────┬───┬──────┬───────────────┬─────────────────────────────────────────────────────────────────┐
+│name           │age│gender│secret.identity│powers                                                           │
+├───────────────┼───┼──────┼───────────────┼─────────────────────────────────────────────────────────────────┤
+│Madame Uppercut│39 │female│Jane Wilson    │["Million tonne punch","Damage resistance","Superhuman reflexes"]│
+│Molecule Man   │29 │male  │Dan Jukes      │["Radiation resistance","Turning tiny","Radiation blast"]        │
+└───────────────┴───┴──────┴───────────────┴─────────────────────────────────────────────────────────────────┘
 EOF
         end_
 
         describe 'multiple filters'
           matches_expected 'sort_by="age=39 gender=female" json2table' <<-EOF
-┌───┬──────┬───────────────┬─────────────────────────────────────────────────────────────────┬───────────────┐
-│age│gender│name           │powers                                                           │secret.identity│
-├───┼──────┼───────────────┼─────────────────────────────────────────────────────────────────┼───────────────┤
-│39 │female│Madame Uppercut│["Million tonne punch","Damage resistance","Superhuman reflexes"]│Jane Wilson    │
-└───┴──────┴───────────────┴─────────────────────────────────────────────────────────────────┴───────────────┘
+┌───────────────┬───┬──────┬───────────────┬─────────────────────────────────────────────────────────────────┐
+│name           │age│gender│secret.identity│powers                                                           │
+├───────────────┼───┼──────┼───────────────┼─────────────────────────────────────────────────────────────────┤
+│Madame Uppercut│39 │female│Jane Wilson    │["Million tonne punch","Damage resistance","Superhuman reflexes"]│
+└───────────────┴───┴──────┴───────────────┴─────────────────────────────────────────────────────────────────┘
 EOF
         end_
 
         describe 'multiple filters on multiple lines'
           export age=39 gender=female; sort_by=$(set | grep -E '^(age|gender)')
           matches_expected "sort_by='$sort_by' json2table" <<-EOF
-┌───┬──────┬───────────────┬─────────────────────────────────────────────────────────────────┬───────────────┐
-│age│gender│name           │powers                                                           │secret.identity│
-├───┼──────┼───────────────┼─────────────────────────────────────────────────────────────────┼───────────────┤
-│39 │female│Madame Uppercut│["Million tonne punch","Damage resistance","Superhuman reflexes"]│Jane Wilson    │
-└───┴──────┴───────────────┴─────────────────────────────────────────────────────────────────┴───────────────┘
+┌───────────────┬───┬──────┬───────────────┬─────────────────────────────────────────────────────────────────┐
+│name           │age│gender│secret.identity│powers                                                           │
+├───────────────┼───┼──────┼───────────────┼─────────────────────────────────────────────────────────────────┤
+│Madame Uppercut│39 │female│Jane Wilson    │["Million tonne punch","Damage resistance","Superhuman reflexes"]│
+└───────────────┴───┴──────┴───────────────┴─────────────────────────────────────────────────────────────────┘
 EOF
         end_
 
@@ -391,13 +391,13 @@ EOF
       describe 'with `resources` var'
         matches_expected 'resources=members json2table' <<-EOF
 members
-┌───────┬──────┬───────────────┬───────────────────────────────────────────────────────────────────────────────────┬───────────────┐
-│age    │gender│name           │powers                                                                             │secret.identity│
-├───────┼──────┼───────────────┼───────────────────────────────────────────────────────────────────────────────────┼───────────────┤
-│29     │male  │Molecule Man   │["Radiation resistance","Turning tiny","Radiation blast"]                          │Dan Jukes      │
-│39     │female│Madame Uppercut│["Million tonne punch","Damage resistance","Superhuman reflexes"]                  │Jane Wilson    │
-│1000000│female│Eternal Flame  │["Immortality","Heat Immunity","Inferno","Teleportation","Interdimensional travel"]│Unknown        │
-└───────┴──────┴───────────────┴───────────────────────────────────────────────────────────────────────────────────┴───────────────┘
+┌───────────────┬───────┬──────┬───────────────┬───────────────────────────────────────────────────────────────────────────────────┐
+│name           │age    │gender│secret.identity│powers                                                                             │
+├───────────────┼───────┼──────┼───────────────┼───────────────────────────────────────────────────────────────────────────────────┤
+│Molecule Man   │29     │male  │Dan Jukes      │["Radiation resistance","Turning tiny","Radiation blast"]                          │
+│Madame Uppercut│39     │female│Jane Wilson    │["Million tonne punch","Damage resistance","Superhuman reflexes"]                  │
+│Eternal Flame  │1000000│female│Unknown        │["Immortality","Heat Immunity","Inferno","Teleportation","Interdimensional travel"]│
+└───────────────┴───────┴──────┴───────────────┴───────────────────────────────────────────────────────────────────────────────────┘
 EOF
 
         describe 'and multiple `resources`'
@@ -409,13 +409,13 @@ location
 │Metro City│Super tower│
 └──────────┴───────────┘
 members
-┌───────┬──────┬───────────────┬───────────────────────────────────────────────────────────────────────────────────┬───────────────┐
-│age    │gender│name           │powers                                                                             │secret.identity│
-├───────┼──────┼───────────────┼───────────────────────────────────────────────────────────────────────────────────┼───────────────┤
-│29     │male  │Molecule Man   │["Radiation resistance","Turning tiny","Radiation blast"]                          │Dan Jukes      │
-│39     │female│Madame Uppercut│["Million tonne punch","Damage resistance","Superhuman reflexes"]                  │Jane Wilson    │
-│1000000│female│Eternal Flame  │["Immortality","Heat Immunity","Inferno","Teleportation","Interdimensional travel"]│Unknown        │
-└───────┴──────┴───────────────┴───────────────────────────────────────────────────────────────────────────────────┴───────────────┘
+┌───────────────┬───────┬──────┬───────────────┬───────────────────────────────────────────────────────────────────────────────────┐
+│name           │age    │gender│secret.identity│powers                                                                             │
+├───────────────┼───────┼──────┼───────────────┼───────────────────────────────────────────────────────────────────────────────────┤
+│Molecule Man   │29     │male  │Dan Jukes      │["Radiation resistance","Turning tiny","Radiation blast"]                          │
+│Madame Uppercut│39     │female│Jane Wilson    │["Million tonne punch","Damage resistance","Superhuman reflexes"]                  │
+│Eternal Flame  │1000000│female│Unknown        │["Immortality","Heat Immunity","Inferno","Teleportation","Interdimensional travel"]│
+└───────────────┴───────┴──────┴───────────────┴───────────────────────────────────────────────────────────────────────────────────┘
 EOF
         end_
       end_
@@ -426,13 +426,13 @@ EOF
       input_cmd() { cat; }
 
       matches_expected 'member.table' <<-EOF
-┌───────┬──────┬───────────────┬───────────────────────────────────────────────────────────────────────────────────┬───────────────┐
-│age    │gender│name           │powers                                                                             │secret.identity│
-├───────┼──────┼───────────────┼───────────────────────────────────────────────────────────────────────────────────┼───────────────┤
-│29     │male  │Molecule Man   │["Radiation resistance","Turning tiny","Radiation blast"]                          │Dan Jukes      │
-│39     │female│Madame Uppercut│["Million tonne punch","Damage resistance","Superhuman reflexes"]                  │Jane Wilson    │
-│1000000│female│Eternal Flame  │["Immortality","Heat Immunity","Inferno","Teleportation","Interdimensional travel"]│Unknown        │
-└───────┴──────┴───────────────┴───────────────────────────────────────────────────────────────────────────────────┴───────────────┘
+┌───────────────┬───────┬──────┬───────────────┬───────────────────────────────────────────────────────────────────────────────────┐
+│name           │age    │gender│secret.identity│powers                                                                             │
+├───────────────┼───────┼──────┼───────────────┼───────────────────────────────────────────────────────────────────────────────────┤
+│Molecule Man   │29     │male  │Dan Jukes      │["Radiation resistance","Turning tiny","Radiation blast"]                          │
+│Madame Uppercut│39     │female│Jane Wilson    │["Million tonne punch","Damage resistance","Superhuman reflexes"]                  │
+│Eternal Flame  │1000000│female│Unknown        │["Immortality","Heat Immunity","Inferno","Teleportation","Interdimensional travel"]│
+└───────────────┴───────┴──────┴───────────────┴───────────────────────────────────────────────────────────────────────────────────┘
 EOF
 
       matches_expected 'member.table name secret.identity:secretIdentity' <<-EOF
@@ -787,15 +787,62 @@ EOF
     describe 'cols'
       describe 'all'
         matches_expected 'json2table' <<-EOF
-┌───────┬──────┬───────────────┬───────────────────────────────────────────────────────────────────────────────────┬───────────────┐
-│age    │gender│name           │powers                                                                             │secret.identity│
-├───────┼──────┼───────────────┼───────────────────────────────────────────────────────────────────────────────────┼───────────────┤
-│29     │male  │Molecule Man   │["Radiation resistance","Turning tiny","Radiation blast"]                          │Dan Jukes      │
-│39     │female│Madame Uppercut│["Million tonne punch","Damage resistance","Superhuman reflexes"]                  │Jane Wilson    │
-│1000000│female│Eternal Flame  │["Immortality","Heat Immunity","Inferno","Teleportation","Interdimensional travel"]│Unknown        │
-└───────┴──────┴───────────────┴───────────────────────────────────────────────────────────────────────────────────┴───────────────┘
+┌───────────────┬───────┬──────┬───────────────┬───────────────────────────────────────────────────────────────────────────────────┐
+│name           │age    │gender│secret.identity│powers                                                                             │
+├───────────────┼───────┼──────┼───────────────┼───────────────────────────────────────────────────────────────────────────────────┤
+│Molecule Man   │29     │male  │Dan Jukes      │["Radiation resistance","Turning tiny","Radiation blast"]                          │
+│Madame Uppercut│39     │female│Jane Wilson    │["Million tonne punch","Damage resistance","Superhuman reflexes"]                  │
+│Eternal Flame  │1000000│female│Unknown        │["Immortality","Heat Immunity","Inferno","Teleportation","Interdimensional travel"]│
+└───────────────┴───────┴──────┴───────────────┴───────────────────────────────────────────────────────────────────────────────────┘
 EOF
       end_
     end_
+  end_
+
+  describe 'find missing cols'
+    input_cmd() { echo '[null, {"c": 3, "a": 1}, null, {"b": 2}, {"b": 2, "c": 3}]'; }
+
+    describe 'from all rows'
+      matches_expected 'json2table' <<-EOF
+┌─┬─┬─┐
+│c│a│b│
+├─┼─┼─┤
+│¿│¿│¿│
+│3│1│¿│
+│¿│¿│¿│
+│¿│¿│2│
+│3│¿│2│
+└─┴─┴─┘
+EOF
+    end_
+
+    describe 'from first non null row'
+      matches_expected 'find_all_cols=false json2table' <<-EOF
+┌─┬─┐
+│c│a│
+├─┼─┤
+│¿│¿│
+│3│1│
+│¿│¿│
+│¿│¿│
+│3│¿│
+└─┴─┘
+EOF
+    end_
+
+    describe 'sorting cols'
+      matches_expected 'sort_cols=true json2table' <<-EOF
+┌─┬─┬─┐
+│a│b│c│
+├─┼─┼─┤
+│¿│¿│¿│
+│1│¿│3│
+│¿│¿│¿│
+│¿│2│¿│
+│¿│2│3│
+└─┴─┴─┘
+EOF
+    end_
+
   end_
 end_

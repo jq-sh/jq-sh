@@ -96,6 +96,37 @@ term() {
   done
 }
 
+RE_TZ="(Z|.[0-2][0-9]:[0-5][0-9])"
+RE_SEC="[0-5][0-9]"
+RE_MIN="[0-5][0-9]"
+RE_HOUR="[0-2][0-9]"
+RE_DAY="[0-3][0-9]"
+RE_MONTH="[0-1][0-9]"
+RE_YEAR="20[0-9][0-9]"
+RE_YEAR_MONTH="${RE_YEAR}-${RE_MONTH}"
+RE_YEAR_MONTH_DAY="${RE_YEAR_MONTH}-${RE_DAY}"
+RE_YEAR_MONTH_DAY_HOUR="${RE_YEAR_MONTH_DAY}T${RE_HOUR}"
+RE_YEAR_MONTH_DAY_HOUR_MIN="${RE_YEAR_MONTH_DAY_HOUR}:${RE_MIN}"
+RE_SEC_TZ="${RE_SEC}${RE_TZ}"
+RE_MIN_SEC_TZ="${RE_MIN}:${RE_SEC_TZ}"
+RE_HOUR_MIN_SEC_TZ="${RE_HOUR}:${RE_MIN_SEC_TZ}"
+RE_DAY_HOUR_MIN_SEC_TZ="${RE_DAY}T${RE_HOUR_MIN_SEC_TZ}"
+RE_MONTH_DAY_HOUR_MIN_SEC_TZ="${RE_MONTH}-${RE_DAY_HOUR_MIN_SEC_TZ}"
+colorize_timestamps() {
+  case ${COLORIZE_TIMESTAMPS:-} in
+    true|TRUE|1) COLORIZE_TIMESTAMPS=SEC ;;
+    *) ;;
+  esac
+  case ${COLORIZE_TIMESTAMPS:-} in
+    SEC  ) term "${RE_YEAR_MONTH_DAY_HOUR_MIN}:[0-5]"{0..9}"${RE_TZ}"  ;;
+    MIN  ) term "${RE_YEAR_MONTH_DAY_HOUR}:[0-5]"{0..9}":${RE_SEC_TZ}" ;;
+    HOUR ) term "${RE_YEAR_MONTH_DAY}T[0-2]"{0..9}":${RE_MIN_SEC_TZ}"  ;;
+    DAY  ) term "${RE_YEAR_MONTH}-[0-3]"{0..9}"T${RE_HOUR_MIN_SEC_TZ}" ;;
+    MONTH) term "${RE_YEAR}-[0-1]"{0..9}"-${RE_DAY_HOUR_MIN_SEC_TZ}"   ;;
+    YEAR ) term "20[0-9]"{0..9}"-${RE_MONTH_DAY_HOUR_MIN_SEC_TZ}"      ;;
+  esac
+}
+
 # TODO - DRY this up...
 color_terms_for() { local resource=$1
   term "(false|FALSE|FAILURE)"
@@ -155,8 +186,7 @@ color_terms_for() { local resource=$1
     fi
   fi
 
-
-  ${COLORIZE_TIMESTAMPS:-false} && term '20[0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-9]'{0..9}Z
+  colorize_timestamps
 }
 
 color_terms_str=${color_terms:-}

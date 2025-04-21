@@ -1,0 +1,32 @@
+#!/usr/bin/env json2table
+
+cols=(
+  startTime
+  isDaytime
+  temperature
+  windSpeed
+  windDirection
+  shortForecast
+)
+
+directions=( '([NSEW])'{N,S,}{E,W,} )
+speeds=( {,{1..9}}{[0-4],[5-9]}' mph' )
+forecasts=(
+  '(?<! )'{{{{Slight\ ,}Chance\ ,}{Light\ ,},}{Drizzle,Rain\ And\ Snow,Rain,Snow}{\ Showers,}{{\ And,}\ Thunderstorms,}{\ Likely,}{\ Likely,},{{Mostly,Partly}\ ,}{Clear,Cloudy,Sunny},{{'Areas Of',Patchy}\ ,}{Fog,Frost}}'((?! )|)'
+)
+temperatures=( {-,}{{0..9},}'[0-9]F' )
+
+
+color_terms=(
+  "${directions[@]}"
+  "${speeds[@]}"
+  "${forecasts[@]}"
+  "${temperatures[@]}"
+)
+
+
+__JQ__
+
+
+.properties.periods[] |
+  .temperature = "\(.temperature)\(.temperatureUnit)"

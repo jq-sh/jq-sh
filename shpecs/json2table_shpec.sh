@@ -777,6 +777,13 @@ EOF
 └───────────────┴───────────────┴───────────────────────────────────────────────────────────────────────────┴───────┘
 EOF
     end_
+
+    describe 'colorizing timestamps'
+      for val in true SEC MIN HOUR DAY MONTH YEAR; do
+        STRIP_COLOR=false matches_expected "COLORIZE_TIMESTAMPS=$val shpecs/support/weather.table < shpecs/support/weather.json" < \
+          "shpecs/support/json2table-colorize-${val}.txt"
+      done
+    end_
   end_
 
   # there should be no difference between .json & .jsonl, so let's only bother doing one test...

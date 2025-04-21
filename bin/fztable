@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-fzjq() {
-  fzjq "$1" "$(jq --raw-output "${2:-.} | keys | map([. , \".\(.)\"])[] | @tsv" "$1" | fzf --delimiter='\t' --with-nth=1 | cut -f2 "$1")"
-}
-
-fzjq "$1"
